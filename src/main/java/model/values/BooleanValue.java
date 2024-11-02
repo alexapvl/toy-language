@@ -36,4 +36,8 @@ public class BooleanValue implements IValue {
     return new BooleanType();
   }
 
+  @Override
+  public IValue deepCopy() {
+    return new BooleanValue(this.value);
+  }
 }

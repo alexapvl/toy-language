@@ -19,4 +19,8 @@ public class BooleanType implements IType {
     return (other instanceof BooleanType);
   }
 
+  @Override
+  public IType deepCopy() {
+    return new BooleanType();
+  }
 }

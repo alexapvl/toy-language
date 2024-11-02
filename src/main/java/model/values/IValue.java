@@ -8,4 +8,6 @@ public interface IValue {
   boolean equals(IValue other);
 
   IType getType();
+
+  IValue deepCopy();
 }

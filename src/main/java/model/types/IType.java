@@ -8,4 +8,6 @@ public interface IType {
   IValue defaultValue();
 
   boolean equals(IType other);
+
+  IType deepCopy();
 }

@@ -36,4 +36,8 @@ public class IntegerValue implements IValue {
     return new IntegerType();
   }
 
+  @Override
+  public IValue deepCopy() {
+    return new IntegerValue(this.value);
+  }
 }

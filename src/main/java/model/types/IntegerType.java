@@ -19,4 +19,8 @@ public class IntegerType implements IType {
     return (other instanceof IntegerType);
   }
 
+  @Override
+  public IType deepCopy() {
+    return new IntegerType();
+  }
 }
