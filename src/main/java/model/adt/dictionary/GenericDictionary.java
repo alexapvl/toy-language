@@ -47,4 +47,12 @@ public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
         }
         return s.toString();
     }
+
+    public Map<K, V> getMap() {
+        return this.dictionary;
+    }
+
+    public void setMap(Map<K, V> dictionary) {
+        this.dictionary = dictionary;
+    }
 }

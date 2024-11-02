@@ -1,5 +1,7 @@
 package model.adt.dictionary;
 
+import java.util.Map;
+
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 
 public interface IGenericDictionary<K, V> {
@@ -12,4 +14,8 @@ public interface IGenericDictionary<K, V> {
   boolean contains(K key);
 
   String toString();
+
+  Map<K, V> getMap();
+
+  void setMap(Map<K, V> dictionary);
 }
