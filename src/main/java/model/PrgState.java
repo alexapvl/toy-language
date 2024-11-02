@@ -1,4 +1,4 @@
-package model.adt.state;
+package model;
 
 public class PrgState {
 

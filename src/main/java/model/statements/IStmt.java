@@ -1,6 +1,6 @@
 package model.statements;
 
-import model.adt.state.PrgState;
+import model.PrgState;
 import model.exceptions.AppException;
 
 public interface IStmt {
