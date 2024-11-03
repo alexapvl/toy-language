@@ -2,6 +2,7 @@ package model.expressions;
 
 import model.adt.dictionary.IGenericDictionary;
 import model.exceptions.AppException;
+import model.expressions.exceptions.ArithmeticExpAppException;
 import model.values.IValue;
 import model.values.BooleanValue;
 import model.types.BooleanType;

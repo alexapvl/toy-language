@@ -3,6 +3,7 @@ package model.expressions;
 import model.values.IValue;
 import model.adt.dictionary.IGenericDictionary;
 import model.exceptions.AppException;
+import model.expressions.exceptions.ArithmeticExpAppException;
 
 public class ValueExp implements IExp {
   private IValue value;

@@ -4,6 +4,7 @@ import model.values.IValue;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.exceptions.AppException;
+import model.expressions.exceptions.ArithmeticExpAppException;
 
 public class VariableExp implements IExp {
   private String id;
