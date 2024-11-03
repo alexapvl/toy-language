@@ -13,7 +13,7 @@ public class VariableExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticException {
     if (symTable.contains(id)) {
       try {
         return symTable.lookup(id);

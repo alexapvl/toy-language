@@ -26,7 +26,7 @@ public class ArithmeticExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticException {
     IValue v1, v2;
 
     v1 = first.eval(symTable);
