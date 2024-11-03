@@ -12,7 +12,7 @@ public class ValueExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
     return value;
   }
 

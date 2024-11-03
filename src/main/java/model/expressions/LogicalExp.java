@@ -23,7 +23,7 @@ public class LogicalExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
     IValue v1, v2;
     v1 = first.eval(symTable);
     v2 = second.eval(symTable);
