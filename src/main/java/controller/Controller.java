@@ -9,9 +9,16 @@ import repository.IRepository;
 
 public class Controller {
   private IRepository repo;
+  private boolean displayFlag; // if the display flag is set, it will display the program state after each step
+                               // of the execution
 
-  public Controller(IRepository repo) {
+  public Controller(IRepository repo, boolean displayFlag) {
     this.repo = repo;
+    this.displayFlag = displayFlag;
+  }
+
+  public boolean getDisplayFlag() {
+    return this.displayFlag;
   }
 
   public PrgState oneStep(PrgState prg) throws AppException {
@@ -31,11 +38,11 @@ public class Controller {
 
   public void allSteps() throws AppException {
     PrgState currentPrg = repo.getCurrentPrg();
-    System.out.println(currentPrg);
     while (!currentPrg.getExeStack().isEmpty()) {
       oneStep(currentPrg);
-      System.out.println(currentPrg);
+      if (this.displayFlag) {
+        System.out.println(currentPrg);
+      }
     }
   }
-
 }
