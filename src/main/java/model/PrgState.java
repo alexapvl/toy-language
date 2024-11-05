@@ -56,8 +56,8 @@ public class PrgState {
 
   @Override
   public String toString() {
-    return "PrgState{\n" + "exeStack=" + this.exeStack.toString() + "\n symTable=" + this.symTable.toString()
-        + "\n output=" + this.out.toString() + "\noriginalProgram=" + this.originalProgram.toString() + "\n}";
+    return "PrgState{\n" + "exeStack={\n" + this.exeStack.toString() + "}\nsymTable={\n" + this.symTable.toString()
+        + "}\n output={\n" + this.out.toString() + "}\noriginalProgram={\n" + this.originalProgram.toString() + "\n}";
   }
 
 }

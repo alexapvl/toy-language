@@ -39,6 +39,10 @@ public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
 
     @Override
     public String toString() {
+        if (this.dictionary.isEmpty()) {
+            return "(the symTable is empty)\n";
+        }
+
         StringBuilder s = new StringBuilder();
         for (K key : this.dictionary.keySet()) {
             s.append(key.toString()).append(" -> ");

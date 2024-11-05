@@ -50,11 +50,15 @@ public class GenericStack<T> implements IGenericStack<T> {
 
   @Override
   public String toString() {
+    if (this.stack.isEmpty()) {
+      return "(the stack is empty)";
+    }
+
     StringBuilder result = new StringBuilder();
     for (T elem : this.stack) {
       result.append(elem.toString()).append("\n");
     }
-    return "GenericStack{ stack = " + result + "}";
+    return result.toString();
   }
 
 }

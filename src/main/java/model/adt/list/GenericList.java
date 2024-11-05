@@ -25,4 +25,18 @@ public class GenericList<T> implements IGenericList<T> {
     return this.output;
   }
 
+  @Override
+  public String toString() {
+    if (this.output.isEmpty()) {
+      return "(the output is empty)\n";
+    }
+
+    StringBuilder s = new StringBuilder();
+    for (T elem : this.output) {
+      s.append(elem.toString()).append("\n");
+    }
+
+    return s.toString();
+  }
+
 }
