@@ -54,7 +54,7 @@ public class View {
                             new ValueExp(new IntegerValue(5))))),
                 new CompoundStmt(
                     new AssignmentStmt("b",
-                        new ArithmeticExp(new VariableExp("b"), ArithmeticOp.ADD, new ValueExp(new IntegerValue(1)))),
+                        new ArithmeticExp(new VariableExp("a"), ArithmeticOp.ADD, new ValueExp(new IntegerValue(1)))),
                     new PrintStmt(new VariableExp("b"))))));
   }
 
