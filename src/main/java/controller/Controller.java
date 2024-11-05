@@ -42,6 +42,7 @@ public class Controller {
       oneStep(currentPrg);
       if (this.displayFlag) {
         System.out.println(currentPrg);
+        System.out.println("################################################");
       }
     }
   }
