@@ -6,13 +6,7 @@ import model.values.IValue;
 import model.values.IntegerValue;
 import model.exceptions.AppException;
 import model.expressions.exceptions.ArithmeticExpAppException;
-
-enum ArithmeticOp {
-  ADD,
-  SUBTRACT,
-  MULTIPLY,
-  DIVIDE
-}
+import model.expressions.enums.ArithmeticOp;
 
 public class ArithmeticExp implements IExp {
   private IExp first;

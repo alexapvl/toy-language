@@ -6,11 +6,7 @@ import model.expressions.exceptions.ArithmeticExpAppException;
 import model.values.IValue;
 import model.values.BooleanValue;
 import model.types.BooleanType;
-
-enum LogicalOp {
-  AND,
-  OR
-}
+import model.expressions.enums.LogicalOp;
 
 public class LogicalExp implements IExp {
   IExp first;
