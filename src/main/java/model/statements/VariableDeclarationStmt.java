@@ -19,21 +19,21 @@ public class VariableDeclarationStmt implements IStmt {
   public PrgState execute(PrgState prg) throws AppException {
     IGenericDictionary<String, IValue> symTable = prg.getSymTable();
 
-    if (symTable.contains(id)) {
-      throw new AppException("Variable " + id + " is already defined");
+    if (symTable.contains(this.id)) {
+      throw new AppException("Variable " + this.id + " is already defined");
     }
 
-    symTable.put(id, type.defaultValue());
+    symTable.put(this.id, type.defaultValue());
     return prg;
   }
 
   @Override
   public IStmt deepCopy() {
-    return new VariableDeclarationStmt(id, type);
+    return new VariableDeclarationStmt(this.id, type);
   }
 
   @Override
   public String toString() {
-    return type.toString() + " " + id;
+    return type.toString() + " " + this.id;
   }
 }

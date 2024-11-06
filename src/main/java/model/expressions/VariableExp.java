@@ -15,20 +15,20 @@ public class VariableExp implements IExp {
 
   @Override
   public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
-    if (symTable.contains(id)) {
+    if (symTable.contains(this.id)) {
       try {
-        return symTable.lookup(id);
+        return symTable.lookup(this.id);
       } catch (KeyNotFoundAppException e) {
         throw new AppException(e.getMessage());
       }
     } else {
-      throw new AppException("Variable " + id + " is not defined");
+      throw new AppException("Variable " + this.id + " is not defined");
     }
   }
 
   @Override
   public IExp deepCopy() {
-    return new VariableExp(id);
+    return new VariableExp(this.id);
   }
 
   @Override

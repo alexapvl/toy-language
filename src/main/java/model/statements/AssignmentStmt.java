@@ -19,7 +19,7 @@ public class AssignmentStmt implements IStmt {
   @Override
   public PrgState execute(PrgState state) throws AppException {
     IGenericDictionary<String, IValue> symTable = state.getSymTable();
-    if (symTable.contains(id)) {
+    if (symTable.contains(this.id)) {
       IValue val;
       try {
         val = exp.eval(symTable);
@@ -28,29 +28,29 @@ public class AssignmentStmt implements IStmt {
       }
 
       try {
-        if (val.getType().equals(symTable.lookup(id).getType())) {
-          symTable.put(id, val);
+        if (val.getType().equals(symTable.lookup(this.id).getType())) {
+          symTable.put(this.id, val);
         } else {
-          throw new AppException("Type of expression and type of variable " + id + " do not match");
+          throw new AppException("Type of expression and type of variable " + this.id + " do not match");
         }
       } catch (KeyNotFoundAppException error) {
         throw new AppException(error.getMessage());
       }
 
     } else
-      throw new AppException("Variable " + id + " is not defined");
+      throw new AppException("Variable " + this.id + " is not defined");
 
     return state;
   }
 
   @Override
   public IStmt deepCopy() {
-    return new AssignmentStmt(id, exp.deepCopy());
+    return new AssignmentStmt(this.id, exp.deepCopy());
   }
 
   @Override
   public String toString() {
-    return id + "=" + exp.toString();
+    return this.id + "=" + exp.toString();
   }
 
 }
