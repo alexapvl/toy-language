@@ -55,8 +55,8 @@ public class GenericStack<T> implements IGenericStack<T> {
     }
 
     StringBuilder result = new StringBuilder();
-    for (T elem : this.stack) {
-      result.append(elem.toString()).append("\n");
+    for (int i = this.stack.size() - 1; i >= 0; --i) {
+      result.append(this.stack.get(i).toString()).append("\n");
     }
     return result.toString();
   }
