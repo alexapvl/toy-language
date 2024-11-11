@@ -27,6 +27,6 @@ public class CompoundStmt implements IStmt {
 
   @Override
   public String toString() {
-    return "(" + first.toString() + "; " + second.toString() + ")";
+    return first.toString() + "\n" + second.toString();
   }
 }
