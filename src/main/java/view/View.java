@@ -115,7 +115,7 @@ public class View {
     try {
       controller.allSteps();
     } catch (AppException error) {
-      System.out.println(error.getMessage());
+      System.err.println(error.getMessage());
     }
 
     scanner.close();
