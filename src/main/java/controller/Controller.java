@@ -38,6 +38,11 @@ public class Controller {
 
   public void allSteps() throws AppException {
     PrgState currentPrg = repo.getCurrentPrg();
+    // print the initial program state before doing the first step
+    if (this.displayFlag) {
+      System.out.println(currentPrg);
+      System.out.println("################################################");
+    }
     while (!currentPrg.getExeStack().isEmpty()) {
       oneStep(currentPrg);
       if (this.displayFlag) {
