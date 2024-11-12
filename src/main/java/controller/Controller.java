@@ -38,17 +38,18 @@ public class Controller {
 
   public void allSteps() throws AppException {
     PrgState currentPrg = repo.getCurrentPrg();
-    while (!currentPrg.getExeStack().isEmpty()) {
-      if (this.displayFlag) {
-        System.out.println(currentPrg);
-        System.out.println("################################################");
-      }
-      oneStep(currentPrg);
-    }
+    this.repo.logPrgStateExec();
     if (this.displayFlag) {
       System.out.println(currentPrg);
-      System.out.println("################################################");
+      System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#");
     }
-
+    while (!currentPrg.getExeStack().isEmpty()) {
+      oneStep(currentPrg);
+      this.repo.logPrgStateExec();
+      if (this.displayFlag) {
+        System.out.println(currentPrg);
+        System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#");
+      }
+    }
   }
 }

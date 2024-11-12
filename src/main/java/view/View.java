@@ -73,51 +73,84 @@ public class View {
                     new PrintStmt(new VariableExp("v"))))));
   }
 
-  public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    IStmt selectedProgram = null;
+  private static IStmt selectExample(Scanner scanner) {
+    IStmt selectedExample = null;
 
-    while (selectedProgram == null) {
+    while (selectedExample == null) {
       System.out.println("1. int v; v = 2; Print(v)");
       System.out.println("2. int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)");
       System.out.println("3. bool a; int v; a = true; (If a Then v = 2 Else v = 3); Print(v)");
-      System.out.println("\nSelect the program to execute: (1 - 3)");
+      System.out.println("0. Exit");
+      System.out.println("\nSelect the program to execute: (1 - 3) or '0' to exit");
 
       try {
         int choice = scanner.nextInt();
         switch (choice) {
           case 1:
-            selectedProgram = createExample1();
+            selectedExample = createExample1();
             break;
           case 2:
-            selectedProgram = createExample2();
+            selectedExample = createExample2();
             break;
           case 3:
-            selectedProgram = createExample3();
+            selectedExample = createExample3();
             break;
+          case 0:
+            System.exit(0);
           default:
             System.out.println("Invalid choice!");
         }
       } catch (InputMismatchException e) {
         System.out.println("Please enter a valid number!");
-        scanner.nextLine();
+        scanner.nextInt();
       }
     }
+    return selectedExample;
+  }
 
+  private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
-    IGenericStack<IStmt> stk = new GenericStack<>();
+    IGenericStack<IStmt> exeStack = new GenericStack<>();
     IGenericList<IValue> output = new GenericList<>();
 
-    PrgState prg = new PrgState(symTable, stk, output, selectedProgram);
-    IRepository repo = new Repository(prg);
-    Controller controller = new Controller(repo, true);
+    return new PrgState(symTable, exeStack, output, originalProgram);
+  }
 
+  private static Controller createController(IStmt originalProgram, String logFilePath, boolean displayFlag) {
+    PrgState prg = createPrgState(originalProgram);
+    IRepository repo = new Repository(prg, logFilePath);
+
+    return new Controller(repo, displayFlag);
+  }
+
+  private static String selectLogFilePath(Scanner scanner) {
+    String logFilePath = null;
+
+    System.out.println("Provide the name of the log file(without any extension): ");
+    logFilePath = scanner.next();
+
+    return logFilePath + ".log";
+  }
+
+  private static void runExample(Controller controller) {
     try {
       controller.allSteps();
     } catch (AppException error) {
       System.err.println(error.getMessage());
     }
+  }
 
-    scanner.close();
+  public static void main(String[] args) {
+    Scanner scanner = new Scanner(System.in);
+    IStmt selectedExample;
+    String logFilePath;
+    try (scanner) {
+      selectedExample = selectExample(scanner);
+      logFilePath = selectLogFilePath(scanner);
+    }
+
+    Controller controller = createController(selectedExample, logFilePath, false);
+
+    runExample(controller);
   }
 }
