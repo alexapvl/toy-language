@@ -1,5 +1,6 @@
 package view;
 
+import java.io.BufferedReader;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -16,16 +17,21 @@ import model.expressions.ArithmeticExp;
 import model.expressions.ValueExp;
 import model.expressions.VariableExp;
 import model.statements.AssignmentStmt;
+import model.statements.CloseRFileStmt;
 import model.statements.CompoundStmt;
 import model.statements.IStmt;
 import model.statements.IfStmt;
+import model.statements.OpenRFileStmt;
 import model.statements.PrintStmt;
+import model.statements.ReadFileStmt;
 import model.statements.VariableDeclarationStmt;
 import model.types.BooleanType;
 import model.types.IntegerType;
+import model.types.StringType;
 import model.values.BooleanValue;
 import model.values.IValue;
 import model.values.IntegerValue;
+import model.values.StringValue;
 import repository.IRepository;
 import repository.Repository;
 import controller.Controller;
@@ -73,6 +79,29 @@ public class View {
                     new PrintStmt(new VariableExp("v"))))));
   }
 
+  private static IStmt createExample4() {
+    // string varf; varf = "test.in"; openRFile(varf); int varc; readFile(varf,
+    // varc); print(varc); readFile(varf, varc); print(varc); closeRFile(varf)
+    return new CompoundStmt(
+        new VariableDeclarationStmt("varf", new StringType()),
+        new CompoundStmt(
+            new AssignmentStmt("varf", new ValueExp(new StringValue("test.in"))),
+            new CompoundStmt(
+                new OpenRFileStmt(new VariableExp("varf")),
+                new CompoundStmt(
+                    new VariableDeclarationStmt("varc", new IntegerType()),
+                    new CompoundStmt(
+                        new ReadFileStmt(new VariableExp("varf"), "varc"),
+                        new CompoundStmt(
+                            new PrintStmt(new VariableExp("varc")),
+                            new CompoundStmt(
+                                new ReadFileStmt(new VariableExp("varf"), "varc"),
+                                new CompoundStmt(
+                                    new PrintStmt(new VariableExp("varc")),
+                                    new CloseRFileStmt(new VariableExp("varf"))))))))));
+
+  }
+
   private static IStmt selectExample(Scanner scanner) {
     IStmt selectedExample = null;
 
@@ -80,6 +109,8 @@ public class View {
       System.out.println("1. int v; v = 2; Print(v)");
       System.out.println("2. int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)");
       System.out.println("3. bool a; int v; a = true; (If a Then v = 2 Else v = 3); Print(v)");
+      System.out.println(
+          "string varf; varf = \"test.in\"; openRFile(varf); int varc; readFile(varf, varc); print(varc); readFile(varf, varc); print(varc); closeRFile(varf)");
       System.out.println("0. Exit");
       System.out.println("\nSelect the program to execute: (1 - 3) or '0' to exit");
 
@@ -94,6 +125,9 @@ public class View {
             break;
           case 3:
             selectedExample = createExample3();
+            break;
+          case 4:
+            selectedExample = createExample4();
             break;
           case 0:
             System.exit(0);
@@ -112,8 +146,9 @@ public class View {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
     IGenericList<IValue> output = new GenericList<>();
+    IGenericDictionary<StringValue, BufferedReader> fileTable = new GenericDictionary<>();
 
-    return new PrgState(symTable, exeStack, output, originalProgram);
+    return new PrgState(symTable, exeStack, output, originalProgram, fileTable);
   }
 
   private static Controller createController(IStmt originalProgram, String logFilePath, boolean displayFlag) {
