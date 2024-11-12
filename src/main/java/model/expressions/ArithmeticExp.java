@@ -60,6 +60,6 @@ public class ArithmeticExp implements IExp {
 
   @Override
   public String toString() {
-    return first.toString() + " " + op.toString() + " " + second.toString();
+    return "(" + first.toString() + " " + op.toString() + " " + second.toString() + ")";
   }
 }

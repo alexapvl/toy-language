@@ -2,7 +2,6 @@ package model.expressions;
 
 import model.adt.dictionary.IGenericDictionary;
 import model.exceptions.AppException;
-import model.expressions.exceptions.ArithmeticExpAppException;
 import model.values.IValue;
 import model.values.BooleanValue;
 import model.types.BooleanType;
@@ -20,7 +19,7 @@ public class LogicalExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException {
     IValue v1, v2;
     v1 = first.eval(symTable);
     v2 = second.eval(symTable);
@@ -54,6 +53,6 @@ public class LogicalExp implements IExp {
 
   @Override
   public String toString() {
-    return first.toString() + " " + op + " " + second.toString();
+    return "(" + first.toString() + " " + op + " " + second.toString() + ")";
   }
 }
