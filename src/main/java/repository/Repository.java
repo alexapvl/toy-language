@@ -37,7 +37,7 @@ public class Repository implements IRepository {
       logFile = new PrintWriter(new BufferedWriter(new FileWriter(this.logFilePath, true)));
       PrgState currentPrg = this.getCurrentPrg();
       logFile.println(currentPrg.toString());
-      logFile.println("#-#-#-#-#-#-#-#-#-#-#-#-#");
+      logFile.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
       logFile.close();
     } catch (IOException error) {
       System.err.println(error.getMessage());

@@ -1,8 +1,6 @@
 package view;
 
 import java.io.BufferedReader;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 import model.expressions.enums.ArithmeticOp;
 import model.PrgState;
@@ -12,7 +10,6 @@ import model.adt.list.GenericList;
 import model.adt.list.IGenericList;
 import model.adt.stack.GenericStack;
 import model.adt.stack.IGenericStack;
-import model.exceptions.AppException;
 import model.expressions.ArithmeticExp;
 import model.expressions.ValueExp;
 import model.expressions.VariableExp;
@@ -34,6 +31,9 @@ import model.values.IntegerValue;
 import model.values.StringValue;
 import repository.IRepository;
 import repository.Repository;
+import view.command.Command;
+import view.command.ExitCommand;
+import view.command.RunExampleCommand;
 import controller.Controller;
 
 public class View {
@@ -102,46 +102,6 @@ public class View {
 
   }
 
-  private static IStmt selectExample(Scanner scanner) {
-    IStmt selectedExample = null;
-
-    while (selectedExample == null) {
-      System.out.println("1. int v; v = 2; Print(v)");
-      System.out.println("2. int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)");
-      System.out.println("3. bool a; int v; a = true; (If a Then v = 2 Else v = 3); Print(v)");
-      System.out.println(
-          "string varf; varf = \"test.in\"; openRFile(varf); int varc; readFile(varf, varc); print(varc); readFile(varf, varc); print(varc); closeRFile(varf)");
-      System.out.println("0. Exit");
-      System.out.println("\nSelect the program to execute: (1 - 3) or '0' to exit");
-
-      try {
-        int choice = scanner.nextInt();
-        switch (choice) {
-          case 1:
-            selectedExample = createExample1();
-            break;
-          case 2:
-            selectedExample = createExample2();
-            break;
-          case 3:
-            selectedExample = createExample3();
-            break;
-          case 4:
-            selectedExample = createExample4();
-            break;
-          case 0:
-            System.exit(0);
-          default:
-            System.out.println("Invalid choice!");
-        }
-      } catch (InputMismatchException e) {
-        System.out.println("Please enter a valid number!");
-        scanner.nextInt();
-      }
-    }
-    return selectedExample;
-  }
-
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
@@ -158,34 +118,27 @@ public class View {
     return new Controller(repo, displayFlag);
   }
 
-  private static String selectLogFilePath(Scanner scanner) {
-    String logFilePath = null;
+  public static TextMenu createTextMenu() {
+    Controller ctr1 = createController(createExample1(), "log1.log", false);
+    Controller ctr2 = createController(createExample2(), "log2.log", false);
+    Controller ctr3 = createController(createExample3(), "log3.log", false);
+    Controller ctr4 = createController(createExample4(), "log4.log", false);
 
-    System.out.println("Provide the name of the log file(without any extension): ");
-    logFilePath = scanner.next();
+    Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
+    Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
+    Command cmm3 = new RunExampleCommand("3", "bool a; int v; a = true;(if a then v = 2 else v = 3); Print(v)", ctr3);
+    Command cmm4 = new RunExampleCommand("4",
+        "string varf; varf = \"test.in\"; openRFile(varf); int varc; readFile(varf,varc); print(varc); readFile(varf, varc); print(varc); closeRFile(varf)",
+        ctr4);
 
-    return logFilePath + ".log";
+    TextMenu textMenu = new TextMenu();
+    textMenu.addCommand(cmm1);
+    textMenu.addCommand(cmm2);
+    textMenu.addCommand(cmm3);
+    textMenu.addCommand(cmm4);
+    textMenu.addCommand(new ExitCommand("0", "Exit"));
+
+    return textMenu;
   }
 
-  private static void runExample(Controller controller) {
-    try {
-      controller.allSteps();
-    } catch (AppException error) {
-      System.err.println(error.getMessage());
-    }
-  }
-
-  public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    IStmt selectedExample;
-    String logFilePath;
-    try (scanner) {
-      selectedExample = selectExample(scanner);
-      logFilePath = selectLogFilePath(scanner);
-    }
-
-    Controller controller = createController(selectedExample, logFilePath, false);
-
-    runExample(controller);
-  }
 }

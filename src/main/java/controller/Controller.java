@@ -41,14 +41,14 @@ public class Controller {
     this.repo.logPrgStateExec();
     if (this.displayFlag) {
       System.out.println(currentPrg);
-      System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#");
+      System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
     }
     while (!currentPrg.getExeStack().isEmpty()) {
       oneStep(currentPrg);
       this.repo.logPrgStateExec();
       if (this.displayFlag) {
         System.out.println(currentPrg);
-        System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#");
+        System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
       }
     }
   }

@@ -1,7 +1,7 @@
-import view.View;
+import view.Interpreter;
 
 public class Main {
     public static void main(String[] args) {
-        View.main(args);
+        Interpreter.main(args);
     }
 }
