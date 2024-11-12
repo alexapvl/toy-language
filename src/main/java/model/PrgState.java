@@ -1,23 +1,28 @@
 package model;
 
+import java.io.BufferedReader;
+
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.list.IGenericList;
 import model.adt.stack.IGenericStack;
 import model.statements.IStmt;
 import model.values.IValue;
+import model.values.StringValue;
 
 public class PrgState {
   private IGenericDictionary<String, IValue> symTable;
   private IGenericStack<IStmt> exeStack;
   private IGenericList<IValue> out;
   private IStmt originalProgram;
+  private IGenericDictionary<StringValue, BufferedReader> fileTable;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
-      IGenericList<IValue> out, IStmt originalProgram) {
+      IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable) {
     this.symTable = symTable;
     this.exeStack = exeStack;
     this.out = out;
     this.originalProgram = originalProgram;
+    this.fileTable = fileTable;
 
     exeStack.push(originalProgram);
   }
@@ -54,10 +59,18 @@ public class PrgState {
     this.originalProgram = originalProgram.deepCopy();
   }
 
+  public IGenericDictionary<StringValue, BufferedReader> getFileTable() {
+    return this.fileTable;
+  }
+
+  public void setFileTable(IGenericDictionary<StringValue, BufferedReader> fileTable) {
+    this.fileTable = fileTable;
+  }
+
   @Override
   public String toString() {
-    return "ExeStack:\n" + this.exeStack.toString() + "\nSymTable:\n" + this.symTable.toString()
-        + "\nOut:\n" + this.out.toString() + "\nFileTable:\nTo be implemented";
+    return "ExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
+        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable;
   }
 
 }
