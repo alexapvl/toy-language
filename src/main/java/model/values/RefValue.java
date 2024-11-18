@@ -4,7 +4,7 @@ import model.types.IType;
 import model.types.RefType;
 
 public class RefValue implements IValue {
-  private int address;
+  private Integer address;
   private IType locationType;
 
   public RefValue(int address, IType locationType) {
@@ -12,7 +12,7 @@ public class RefValue implements IValue {
     this.locationType = locationType;
   }
 
-  public int getAddr() {
+  public Integer getAddr() {
     return this.address;
   }
 
