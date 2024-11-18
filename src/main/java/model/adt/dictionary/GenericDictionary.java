@@ -5,6 +5,8 @@ import java.util.Map;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
     // Map is an interface, HashMap is a class that implements Map
@@ -52,10 +54,17 @@ public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
         return s.toString();
     }
 
+    @Override
     public Map<K, V> getMap() {
         return this.dictionary;
     }
 
+    @Override
+    public List<V> getValues() {
+        return new LinkedList<V>(this.dictionary.values());
+    }
+
+    @Override
     public void setMap(Map<K, V> dictionary) {
         this.dictionary = dictionary;
     }
