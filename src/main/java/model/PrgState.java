@@ -1,6 +1,8 @@
 package model;
 
 import java.io.BufferedReader;
+import java.util.HashSet;
+import java.util.Set;
 
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
@@ -8,6 +10,7 @@ import model.adt.list.IGenericList;
 import model.adt.stack.IGenericStack;
 import model.statements.IStmt;
 import model.values.IValue;
+import model.values.RefValue;
 import model.values.StringValue;
 
 public class PrgState {
@@ -85,4 +88,23 @@ public class PrgState {
         + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
   }
 
+  public Set<Integer> getUsedAddresses() {
+    Set<Integer> usedAddresses = new HashSet<>();
+
+    // Get used addresses from symTable
+    for (IValue value : this.symTable.getValues()) {
+      if (value instanceof RefValue) {
+        usedAddresses.add(((RefValue) value).getAddr());
+      }
+    }
+
+    // Get used addresses from heap - case in which we have RefValues in the heap
+    for (IValue value : this.heap.getValues()) {
+      if (value instanceof RefValue) {
+        usedAddresses.add(((RefValue) value).getAddr());
+      }
+    }
+
+    return usedAddresses;
+  }
 }
