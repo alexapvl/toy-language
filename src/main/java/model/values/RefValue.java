@@ -7,7 +7,7 @@ public class RefValue implements IValue {
   private Integer address;
   private IType locationType;
 
-  public RefValue(int address, IType locationType) {
+  public RefValue(Integer address, IType locationType) {
     this.address = address;
     this.locationType = locationType;
   }
