@@ -2,6 +2,7 @@ package model.expressions;
 
 import model.values.IValue;
 import model.adt.dictionary.IGenericDictionary;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.exceptions.ArithmeticExpAppException;
 
@@ -13,7 +14,8 @@ public class ValueExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable, IGenericHeap<Integer, IValue> heap)
+      throws AppException, ArithmeticExpAppException {
     return value;
   }
 

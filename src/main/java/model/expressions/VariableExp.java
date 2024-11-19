@@ -3,6 +3,7 @@ package model.expressions;
 import model.values.IValue;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.exceptions.ArithmeticExpAppException;
 
@@ -14,7 +15,8 @@ public class VariableExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException, ArithmeticExpAppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable, IGenericHeap<Integer, IValue> heap)
+      throws AppException, ArithmeticExpAppException {
     if (symTable.contains(this.id)) {
       try {
         return symTable.lookup(this.id);

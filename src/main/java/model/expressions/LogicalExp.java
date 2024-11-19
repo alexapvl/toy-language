@@ -1,6 +1,7 @@
 package model.expressions;
 
 import model.adt.dictionary.IGenericDictionary;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.values.IValue;
 import model.values.BooleanValue;
@@ -19,10 +20,11 @@ public class LogicalExp implements IExp {
   }
 
   @Override
-  public IValue eval(IGenericDictionary<String, IValue> symTable) throws AppException {
+  public IValue eval(IGenericDictionary<String, IValue> symTable, IGenericHeap<Integer, IValue> heap)
+      throws AppException {
     IValue v1, v2;
-    v1 = first.eval(symTable);
-    v2 = second.eval(symTable);
+    v1 = first.eval(symTable, heap);
+    v2 = second.eval(symTable, heap);
 
     if (v1.getType().equals(new BooleanType())) {
       if (v2.getType().equals(new BooleanType())) {
