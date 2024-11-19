@@ -6,6 +6,7 @@ import java.io.IOException;
 import model.PrgState;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.types.IntegerType;
@@ -27,6 +28,7 @@ public class ReadFileStmt implements IStmt {
   public PrgState execute(PrgState prg) throws AppException {
     IGenericDictionary<String, IValue> symTable = prg.getSymTable();
     IGenericDictionary<StringValue, BufferedReader> fileTable = prg.getFileTable();
+    IGenericHeap<Integer, IValue> heap = prg.getHeap();
 
     // check if symTable contains the key
     if (!symTable.contains(this.varName)) {
@@ -49,7 +51,7 @@ public class ReadFileStmt implements IStmt {
     // evaluate the expression to get the value
     IValue fileNameValue;
     try {
-      fileNameValue = this.exp.eval(symTable);
+      fileNameValue = this.exp.eval(symTable, heap);
     } catch (AppException error) {
       throw new AppException(error.getMessage());
     }

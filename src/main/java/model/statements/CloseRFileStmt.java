@@ -6,6 +6,7 @@ import java.io.IOException;
 import model.PrgState;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.types.StringType;
@@ -23,10 +24,11 @@ public class CloseRFileStmt implements IStmt {
   public PrgState execute(PrgState prg) throws AppException {
     IGenericDictionary<String, IValue> symTable = prg.getSymTable();
     IGenericDictionary<StringValue, BufferedReader> fileTable = prg.getFileTable();
+    IGenericHeap<Integer, IValue> heap = prg.getHeap();
 
     IValue value;
     try {
-      value = this.exp.eval(symTable);
+      value = this.exp.eval(symTable, heap);
     } catch (AppException error) {
       throw new AppException(error.getMessage());
     }

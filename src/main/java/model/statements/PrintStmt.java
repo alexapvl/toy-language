@@ -1,6 +1,8 @@
 package model.statements;
 
 import model.PrgState;
+import model.adt.dictionary.IGenericDictionary;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.values.IValue;
@@ -14,9 +16,11 @@ public class PrintStmt implements IStmt {
 
   @Override
   public PrgState execute(PrgState prg) throws AppException {
+    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
+    IGenericHeap<Integer, IValue> heap = prg.getHeap();
     IValue val;
     try {
-      val = exp.eval(prg.getSymTable());
+      val = exp.eval(symTable, heap);
     } catch (AppException error) {
       throw new AppException(error.getMessage());
     }

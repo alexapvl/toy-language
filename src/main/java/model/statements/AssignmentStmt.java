@@ -3,6 +3,7 @@ package model.statements;
 import model.PrgState;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.values.IValue;
@@ -19,10 +20,11 @@ public class AssignmentStmt implements IStmt {
   @Override
   public PrgState execute(PrgState state) throws AppException {
     IGenericDictionary<String, IValue> symTable = state.getSymTable();
+    IGenericHeap<Integer, IValue> heap = state.getHeap();
     if (symTable.contains(this.id)) {
       IValue val;
       try {
-        val = exp.eval(symTable);
+        val = exp.eval(symTable, heap);
       } catch (AppException error) {
         throw new AppException(error.getMessage());
       }

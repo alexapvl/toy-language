@@ -6,6 +6,7 @@ import java.io.FileReader;
 
 import model.PrgState;
 import model.adt.dictionary.IGenericDictionary;
+import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.types.StringType;
@@ -22,10 +23,12 @@ public class OpenRFileStmt implements IStmt {
   @Override
   public PrgState execute(PrgState prg) throws AppException {
     IValue value;
+    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
     IGenericDictionary<StringValue, BufferedReader> fileTable = prg.getFileTable();
+    IGenericHeap<Integer, IValue> heap = prg.getHeap();
 
     try {
-      value = this.exp.eval(prg.getSymTable());
+      value = this.exp.eval(symTable, heap);
     } catch (AppException error) {
       throw new AppException("Error evaluating expression: " + error.getMessage());
     }
