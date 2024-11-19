@@ -3,6 +3,7 @@ package view;
 import java.io.BufferedReader;
 
 import model.expressions.enums.ArithmeticOp;
+import model.expressions.enums.RelationalOp;
 import model.PrgState;
 import model.adt.dictionary.GenericDictionary;
 import model.adt.dictionary.IGenericDictionary;
@@ -14,6 +15,7 @@ import model.adt.stack.GenericStack;
 import model.adt.stack.IGenericStack;
 import model.expressions.ArithmeticExp;
 import model.expressions.ReadHeapExp;
+import model.expressions.RelationalExp;
 import model.expressions.ValueExp;
 import model.expressions.VariableExp;
 import model.statements.WriteHeapStmt;
@@ -27,6 +29,7 @@ import model.statements.OpenRFileStmt;
 import model.statements.PrintStmt;
 import model.statements.ReadFileStmt;
 import model.statements.VariableDeclarationStmt;
+import model.statements.WhileStmt;
 import model.types.BooleanType;
 import model.types.IntegerType;
 import model.types.RefType;
@@ -161,6 +164,22 @@ public class View {
                             new ValueExp(new IntegerValue(5))))))));
   }
 
+  private static IStmt createExample8() {
+    // int v; v=4; (while(v>0) print(v); v=v-1); print(v)
+    return new CompoundStmt(
+        new VariableDeclarationStmt("v", new IntegerType()),
+        new CompoundStmt(new AssignmentStmt("v", new ValueExp(new IntegerValue(4))),
+            new CompoundStmt(
+                new WhileStmt(
+                    new RelationalExp(new VariableExp("v"), new ValueExp(new IntegerValue()), RelationalOp.GREATER),
+                    new CompoundStmt(
+                        new PrintStmt(new VariableExp("v")),
+                        new AssignmentStmt("v",
+                            new ArithmeticExp(new VariableExp("v"), ArithmeticOp.SUBTRACT,
+                                new ValueExp(new IntegerValue(1)))))),
+                new PrintStmt(new VariableExp("v")))));
+  }
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
@@ -186,6 +205,7 @@ public class View {
     Controller ctr5 = createController(createExample5(), "log5.log", false);
     Controller ctr6 = createController(createExample6(), "log6.log", false);
     Controller ctr7 = createController(createExample7(), "log7.log", false);
+    Controller ctr8 = createController(createExample8(), "log8.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -201,6 +221,7 @@ public class View {
         ctr6);
     Command cmm7 = new RunExampleCommand("7",
         "Ref int v; new(v,20); print(readHeap(v)); writeHeap(v,30); print(readHeap(v) + 5);", ctr7);
+    Command cmm8 = new RunExampleCommand("8", "int v; v=4; (while(v>0) print(v); v=v-1); print(v)", ctr8);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -210,6 +231,7 @@ public class View {
     textMenu.addCommand(cmm5);
     textMenu.addCommand(cmm6);
     textMenu.addCommand(cmm7);
+    textMenu.addCommand(cmm8);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
