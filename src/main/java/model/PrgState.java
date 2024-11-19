@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedReader;
 
 import model.adt.dictionary.IGenericDictionary;
+import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
 import model.adt.stack.IGenericStack;
 import model.statements.IStmt;
@@ -15,14 +16,17 @@ public class PrgState {
   private IGenericList<IValue> out;
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
+  private IGenericHeap<Integer, IValue> heap;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
-      IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable) {
+      IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
+      IGenericHeap<Integer, IValue> heap) {
     this.symTable = symTable;
     this.exeStack = exeStack;
     this.out = out;
     this.originalProgram = originalProgram;
     this.fileTable = fileTable;
+    this.heap = heap;
 
     exeStack.push(originalProgram);
   }
@@ -67,10 +71,18 @@ public class PrgState {
     this.fileTable = fileTable;
   }
 
+  public IGenericHeap<Integer, IValue> getHeap() {
+    return this.heap;
+  }
+
+  public void setHeap(IGenericHeap<Integer, IValue> heap) {
+    this.heap = heap;
+  }
+
   @Override
   public String toString() {
     return "ExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
-        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable;
+        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
   }
 
 }
