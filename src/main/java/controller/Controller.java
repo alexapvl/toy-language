@@ -1,10 +1,12 @@
 package controller;
 
 import model.PrgState;
+import model.adt.heap.IGenericHeap;
 import model.adt.stack.IGenericStack;
 import model.adt.stack.exceptions.StackEmptyAppExcetion;
 import model.exceptions.AppException;
 import model.statements.IStmt;
+import model.values.IValue;
 import repository.IRepository;
 
 public class Controller {
@@ -50,6 +52,9 @@ public class Controller {
         System.out.println(currentPrg);
         System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
       }
+      // initiate garbage collection
+      IGenericHeap<Integer, IValue> heap = currentPrg.getHeap();
+      heap.setHeap(heap.safeGarbageCollector(currentPrg.getUsedAddresses(), heap.getHeap()));
     }
   }
 }
