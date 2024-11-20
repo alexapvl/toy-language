@@ -180,6 +180,21 @@ public class View {
                 new PrintStmt(new VariableExp("v")))));
   }
 
+  private static IStmt createExample9() {
+    // Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))
+    return new CompoundStmt(
+        new VariableDeclarationStmt("v", new RefType(new IntegerType())),
+        new CompoundStmt(
+            new HeapAllocationStmt("v", new ValueExp(new IntegerValue(20))),
+            new CompoundStmt(
+                new VariableDeclarationStmt("a", new RefType(new RefType(new IntegerType()))),
+                new CompoundStmt(
+                    new HeapAllocationStmt("a", new VariableExp("v")),
+                    new CompoundStmt(
+                        new HeapAllocationStmt("v", new ValueExp(new IntegerValue(30))),
+                        new PrintStmt(new ReadHeapExp(new ReadHeapExp(new VariableExp("a")))))))));
+  }
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
@@ -206,6 +221,7 @@ public class View {
     Controller ctr6 = createController(createExample6(), "log6.log", false);
     Controller ctr7 = createController(createExample7(), "log7.log", false);
     Controller ctr8 = createController(createExample8(), "log8.log", false);
+    Controller ctr9 = createController(createExample9(), "log9.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -222,6 +238,8 @@ public class View {
     Command cmm7 = new RunExampleCommand("7",
         "Ref int v; new(v,20); print(readHeap(v)); writeHeap(v,30); print(readHeap(v) + 5);", ctr7);
     Command cmm8 = new RunExampleCommand("8", "int v; v=4; (while(v>0) print(v); v=v-1); print(v)", ctr8);
+    Command cmm9 = new RunExampleCommand("9", "Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))",
+        ctr9);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -232,6 +250,7 @@ public class View {
     textMenu.addCommand(cmm6);
     textMenu.addCommand(cmm7);
     textMenu.addCommand(cmm8);
+    textMenu.addCommand(cmm9);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
