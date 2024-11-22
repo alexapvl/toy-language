@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.values.IValue;
 
 public class GenericHeap<K, V> implements IGenericHeap<K, V> {
@@ -18,7 +19,10 @@ public class GenericHeap<K, V> implements IGenericHeap<K, V> {
   }
 
   @Override
-  public V lookup(K key) {
+  public V lookup(K key) throws KeyNotFoundAppException {
+    if (!this.contains(key)) {
+      throw new KeyNotFoundAppException("Key not found in heap");
+    }
     return this.heap.get(key);
   }
 
