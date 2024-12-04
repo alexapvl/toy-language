@@ -1,16 +1,18 @@
 package model;
 
 import java.io.BufferedReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import model.adt.dictionary.GenericDictionary;
 import model.adt.dictionary.IGenericDictionary;
+import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
 import model.adt.stack.IGenericStack;
+import model.adt.stack.exceptions.StackEmptyAppExcetion;
+import model.exceptions.AppException;
 import model.statements.IStmt;
 import model.values.IValue;
-import model.values.RefValue;
 import model.values.StringValue;
 
 public class PrgState {
@@ -20,10 +22,13 @@ public class PrgState {
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
   private IGenericHeap<Integer, IValue> heap;
+  private static AtomicInteger nextId = new AtomicInteger(1);
+  private int id;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
       IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
       IGenericHeap<Integer, IValue> heap) {
+    this.id = getNextId();
     this.symTable = symTable;
     this.exeStack = exeStack;
     this.out = out;
@@ -32,6 +37,14 @@ public class PrgState {
     this.heap = heap;
 
     exeStack.push(originalProgram);
+  }
+
+  private synchronized int getNextId() {
+    return nextId.getAndIncrement();
+  }
+
+  public int getId() {
+    return this.id;
   }
 
   public IGenericDictionary<String, IValue> getSymTable() {
@@ -84,27 +97,40 @@ public class PrgState {
 
   @Override
   public String toString() {
-    return "ExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
+    return "Program ID: " + this.id + "\nExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
         + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
   }
 
-  public Set<Integer> getUsedAddresses() {
-    Set<Integer> usedAddresses = new HashSet<>();
-
-    // Get used addresses from symTable
-    for (IValue value : this.symTable.getValues()) {
-      if (value instanceof RefValue) {
-        usedAddresses.add(((RefValue) value).getAddr());
-      }
-    }
-
-    // Get used addresses from heap - case in which we have RefValues in the heap
-    for (IValue value : this.heap.getValues()) {
-      if (value instanceof RefValue) {
-        usedAddresses.add(((RefValue) value).getAddr());
-      }
-    }
-
-    return usedAddresses;
+  public boolean isNotCompleted() {
+    return !this.exeStack.isEmpty();
   }
+
+  public PrgState oneStep() throws AppException {
+    IGenericStack<IStmt> exeStack = this.getExeStack();
+    if (exeStack.isEmpty()) {
+      throw new AppException("The execution stack is empty, there are no more steps which can be made.");
+    }
+
+    IStmt currentStmt;
+    try {
+      currentStmt = exeStack.pop();
+    } catch (StackEmptyAppExcetion error) {
+      throw new AppException(error.getMessage());
+    }
+    return currentStmt.execute(this);
+  }
+
+  public IGenericDictionary<String, IValue> cloneSymTable() {
+    IGenericDictionary<String, IValue> newSymTable = new GenericDictionary<>();
+    IGenericDictionary<String, IValue> symTable = this.getSymTable();
+    for (String key : symTable.getMap().keySet()) {
+      try {
+        newSymTable.put(key, symTable.lookup(key));
+      } catch (KeyNotFoundAppException error) {
+        System.err.println(error.getMessage());
+      }
+    }
+    return newSymTable;
+  }
+
 }
