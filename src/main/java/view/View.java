@@ -22,6 +22,7 @@ import model.statements.WriteHeapStmt;
 import model.statements.AssignmentStmt;
 import model.statements.CloseRFileStmt;
 import model.statements.CompoundStmt;
+import model.statements.ForkStmt;
 import model.statements.HeapAllocationStmt;
 import model.statements.IStmt;
 import model.statements.IfStmt;
@@ -171,7 +172,8 @@ public class View {
         new CompoundStmt(new AssignmentStmt("v", new ValueExp(new IntegerValue(4))),
             new CompoundStmt(
                 new WhileStmt(
-                    new RelationalExp(new VariableExp("v"), new ValueExp(new IntegerValue()), RelationalOp.GREATER),
+                    new RelationalExp(new VariableExp("v"), new ValueExp(new IntegerValue()),
+                        RelationalOp.GREATER),
                     new CompoundStmt(
                         new PrintStmt(new VariableExp("v")),
                         new AssignmentStmt("v",
@@ -192,7 +194,34 @@ public class View {
                     new HeapAllocationStmt("a", new VariableExp("v")),
                     new CompoundStmt(
                         new HeapAllocationStmt("v", new ValueExp(new IntegerValue(30))),
-                        new PrintStmt(new ReadHeapExp(new ReadHeapExp(new VariableExp("a")))))))));
+                        new PrintStmt(
+                            new ReadHeapExp(new ReadHeapExp(new VariableExp("a")))))))));
+  }
+
+  private static IStmt createExample10() {
+    // int v; Ref int a; v = 10; new(a, 22)
+    // fork(wH(a, 30); v = 32; print(v); print(rH(a)));
+    // print(v); print(rH(a));
+    return new CompoundStmt(
+        new VariableDeclarationStmt("v", new IntegerType()),
+        new CompoundStmt(
+            new VariableDeclarationStmt("a", new RefType(new IntegerType())),
+            new CompoundStmt(
+                new AssignmentStmt("v", new ValueExp(new IntegerValue(10))),
+                new CompoundStmt(
+                    new HeapAllocationStmt("a", new ValueExp(new IntegerValue(22))),
+                    new CompoundStmt(
+                        new ForkStmt(
+                            new CompoundStmt(
+                                new WriteHeapStmt("a", new ValueExp(new IntegerValue(30))),
+                                new CompoundStmt(
+                                    new AssignmentStmt("v", new ValueExp(new IntegerValue(32))),
+                                    new CompoundStmt(
+                                        new PrintStmt(new VariableExp("v")),
+                                        new PrintStmt(new ReadHeapExp(new VariableExp("a"))))))),
+                        new CompoundStmt(
+                            new PrintStmt(new VariableExp("v")),
+                            new PrintStmt(new ReadHeapExp(new VariableExp("a")))))))));
   }
 
   private static PrgState createPrgState(IStmt originalProgram) {
@@ -222,6 +251,7 @@ public class View {
     Controller ctr7 = createController(createExample7(), "log7.log", false);
     Controller ctr8 = createController(createExample8(), "log8.log", false);
     Controller ctr9 = createController(createExample9(), "log9.log", false);
+    Controller ctr10 = createController(createExample10(), "log10.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -240,6 +270,9 @@ public class View {
     Command cmm8 = new RunExampleCommand("8", "int v; v=4; (while(v>0) print(v); v=v-1); print(v)", ctr8);
     Command cmm9 = new RunExampleCommand("9", "Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))",
         ctr9);
+    Command cmm10 = new RunExampleCommand("10",
+        "int v; Ref int a; v = 10; new(a, 22); fork(wH(a, 30); v = 32; print(v); print(rH(a))); print(v); print(rH(a));",
+        ctr10);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -251,6 +284,7 @@ public class View {
     textMenu.addCommand(cmm7);
     textMenu.addCommand(cmm8);
     textMenu.addCommand(cmm9);
+    textMenu.addCommand(cmm10);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
