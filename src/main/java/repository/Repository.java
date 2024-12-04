@@ -26,17 +26,11 @@ public class Repository implements IRepository {
   }
 
   @Override
-  public PrgState getCurrentPrg() {
-    return this.prgList.get(0);
-  }
-
-  @Override
-  public void logPrgStateExec() throws AppException {
+  public void logPrgStateExec(PrgState prg) throws AppException {
     PrintWriter logFile;
     try {
       logFile = new PrintWriter(new BufferedWriter(new FileWriter(this.logFilePath, true)));
-      PrgState currentPrg = this.getCurrentPrg();
-      logFile.println(currentPrg.toString());
+      logFile.println(prg.toString());
       logFile.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
       logFile.close();
     } catch (IOException error) {
@@ -44,4 +38,13 @@ public class Repository implements IRepository {
     }
   }
 
+  @Override
+  public List<PrgState> getPrgList() {
+    return this.prgList;
+  }
+
+  @Override
+  public void setPrgList(List<PrgState> prgList) {
+    this.prgList = prgList;
+  }
 }
