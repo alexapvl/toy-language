@@ -1,18 +1,27 @@
 package controller;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import model.PrgState;
-import model.adt.heap.IGenericHeap;
-import model.adt.stack.IGenericStack;
-import model.adt.stack.exceptions.StackEmptyAppExcetion;
 import model.exceptions.AppException;
-import model.statements.IStmt;
 import model.values.IValue;
+import model.values.RefValue;
 import repository.IRepository;
 
 public class Controller {
   private IRepository repo;
   private boolean displayFlag; // if the display flag is set, it will display the program state after each step
                                // of the execution
+  private ExecutorService executor;
 
   public Controller(IRepository repo, boolean displayFlag) {
     this.repo = repo;
@@ -23,38 +32,96 @@ public class Controller {
     return this.displayFlag;
   }
 
-  public PrgState oneStep(PrgState prg) throws AppException {
-    IGenericStack<IStmt> exeStack = prg.getExeStack();
-    if (exeStack.isEmpty()) {
-      throw new AppException("The execution stack is empty, there are no more steps which can be made.");
+  public Set<Integer> getUsedAddresses() {
+    Set<Integer> usedAddresses = new HashSet<>();
+    // Get used addresses from all symTables since there is one symTable for each
+    // program state
+    for (PrgState prg : this.repo.getPrgList()) {
+      for (IValue value : prg.getSymTable().getValues()) {
+        if (value instanceof RefValue) {
+          usedAddresses.add(((RefValue) value).getAddr());
+        }
+      }
     }
 
-    IStmt currentStmt;
-    try {
-      currentStmt = exeStack.pop();
-    } catch (StackEmptyAppExcetion error) {
-      throw new AppException(error.getMessage());
+    // Get used addresses from the shared heap among all program states - case in
+    // which we have RefValues in the heap
+    for (IValue value : this.repo.getPrgList().get(0).getHeap().getValues()) {
+      if (value instanceof RefValue) {
+        usedAddresses.add(((RefValue) value).getAddr());
+      }
     }
-    return currentStmt.execute(prg);
+
+    return usedAddresses;
+  }
+
+  public Map<Integer, IValue> safeGarbageCollector(Set<Integer> usedAddresses, Map<Integer, IValue> heap) {
+    Map<Integer, IValue> newHeap = new HashMap<Integer, IValue>();
+    for (Integer key : heap.keySet()) {
+      if (usedAddresses.contains(key)) {
+        newHeap.put(key, heap.get(key));
+      }
+    }
+    return newHeap;
   }
 
   public void allSteps() throws AppException {
-    PrgState currentPrg = repo.getCurrentPrg();
-    this.repo.logPrgStateExec();
-    if (this.displayFlag) {
-      System.out.println(currentPrg);
-      System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
+    executor = Executors.newFixedThreadPool(2);
+    // remove the completed programs
+    List<PrgState> prgList = removeCompletedPrograms(repo.getPrgList());
+    while (prgList.size() > 0) {
+      prgList.get(0).getHeap().setHeap(
+          safeGarbageCollector(getUsedAddresses(), prgList.get(0).getHeap().getHeap()));
+      oneStepForAllPrg(prgList);
+      prgList = removeCompletedPrograms(repo.getPrgList());
     }
-    while (!currentPrg.getExeStack().isEmpty()) {
-      oneStep(currentPrg);
-      this.repo.logPrgStateExec();
-      if (this.displayFlag) {
-        System.out.println(currentPrg);
-        System.out.println("#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#");
+    executor.shutdownNow();
+    repo.setPrgList(prgList);
+  }
+
+  public void oneStepForAllPrg(List<PrgState> prgList) throws AppException {
+    try {
+      // before execution, print each program state in the log file
+      prgList.forEach(prg -> {
+        try {
+          repo.logPrgStateExec(prg);
+        } catch (AppException e) {
+          System.err.println(e.getMessage());
+        }
+      });
+      List<Callable<PrgState>> callList = prgList.stream()
+          .map((PrgState p) -> (Callable<PrgState>) (() -> {
+            return p.oneStep();
+          }))
+          .collect(Collectors.toList());
+      List<PrgState> newPrgList = executor.invokeAll(callList).stream()
+          .map(future -> {
+            try {
+              return future.get();
+            } catch (ExecutionException | InterruptedException e) {
+              System.err.println(e.getMessage());
+              return null;
+            }
+          })
+          .filter(p -> p != null)
+          .collect(Collectors.toList());
+      // add the new created threads to the list of existing threads
+      prgList.addAll(newPrgList);
+    } catch (InterruptedException e) {
+      System.err.println(e.getMessage());
+    }
+    // after the execution, print the PrgState List into the log file
+    prgList.forEach(prg -> {
+      try {
+        repo.logPrgStateExec(prg);
+      } catch (AppException e) {
+        System.err.println(e.getMessage());
       }
-      // initiate garbage collection
-      IGenericHeap<Integer, IValue> heap = currentPrg.getHeap();
-      heap.setHeap(heap.safeGarbageCollector(currentPrg.getUsedAddresses(), heap.getHeap()));
-    }
+    });
+    repo.setPrgList(prgList);
+  }
+
+  public List<PrgState> removeCompletedPrograms(List<PrgState> inPrgList) {
+    return inPrgList.stream().filter(prg -> prg.isNotCompleted()).collect(Collectors.toList());
   }
 }
