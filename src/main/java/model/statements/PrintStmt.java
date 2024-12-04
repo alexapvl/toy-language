@@ -26,7 +26,7 @@ public class PrintStmt implements IStmt {
     }
 
     prg.getOutput().add(val);
-    return prg;
+    return null;
   }
 
   @Override

@@ -17,7 +17,7 @@ public class CompoundStmt implements IStmt {
     IGenericStack<IStmt> exeStack = prg.getExeStack();
     exeStack.push(second);
     exeStack.push(first);
-    return prg;
+    return null;
   }
 
   @Override

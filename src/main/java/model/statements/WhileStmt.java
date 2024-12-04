@@ -33,7 +33,7 @@ public class WhileStmt implements IStmt {
       prg.getExeStack().push(stmt);
     }
 
-    return prg;
+    return null;
   }
 
   @Override

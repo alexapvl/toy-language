@@ -43,7 +43,7 @@ public class IfStmt implements IStmt {
       throw new AppException("The condition in the if statement is not of type BooleanType");
     }
 
-    return prg;
+    return null;
   }
 
   @Override

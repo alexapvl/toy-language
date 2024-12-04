@@ -43,7 +43,7 @@ public class WriteHeapStmt implements IStmt {
     }
 
     heap.put(address, value);
-    return prg;
+    return null;
   }
 
   @Override

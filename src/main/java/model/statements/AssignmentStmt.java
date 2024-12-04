@@ -42,7 +42,7 @@ public class AssignmentStmt implements IStmt {
     } else
       throw new AppException("Variable " + this.id + " is not defined");
 
-    return state;
+    return null;
   }
 
   @Override

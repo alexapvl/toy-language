@@ -24,7 +24,7 @@ public class VariableDeclarationStmt implements IStmt {
     }
 
     symTable.put(this.id, type.defaultValue());
-    return prg;
+    return null;
   }
 
   @Override

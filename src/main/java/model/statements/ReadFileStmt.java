@@ -98,7 +98,7 @@ public class ReadFileStmt implements IStmt {
       throw new AppException("Error when reading from file: " + error.getMessage());
     }
 
-    return prg;
+    return null;
   }
 
   @Override

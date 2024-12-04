@@ -49,7 +49,7 @@ public class OpenRFileStmt implements IStmt {
       throw new AppException("File not found: " + error.getMessage());
     }
 
-    return prg;
+    return null;
   }
 
   @Override

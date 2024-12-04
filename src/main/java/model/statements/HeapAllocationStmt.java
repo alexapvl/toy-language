@@ -39,7 +39,7 @@ public class HeapAllocationStmt implements IStmt {
     Integer nextFreeAddress = heap.allocate();
     symTable.put(varName, new RefValue(nextFreeAddress, value.getType()));
     heap.put(nextFreeAddress, value);
-    return prg;
+    return null;
   }
 
   @Override

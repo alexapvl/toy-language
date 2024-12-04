@@ -4,8 +4,8 @@ import model.PrgState;
 
 public class NoOperationStmt implements IStmt {
   @Override
-  public PrgState execute(PrgState state) {
-    return state;
+  public PrgState execute(PrgState prg) {
+    return null;
   }
 
   @Override
