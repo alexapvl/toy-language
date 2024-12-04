@@ -1,2 +1,3 @@
 # toy-language
-Toy language interpreter made in Java
+
+This is the state of the program after A5
