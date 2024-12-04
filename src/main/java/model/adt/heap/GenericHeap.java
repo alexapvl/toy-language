@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
-import model.values.IValue;
 
 public class GenericHeap<K, V> implements IGenericHeap<K, V> {
   private Integer firstFreeAddress;
@@ -69,17 +67,6 @@ public class GenericHeap<K, V> implements IGenericHeap<K, V> {
   @Override
   public void setHeap(Map<K, V> heap) {
     this.heap = heap;
-  }
-
-  @Override
-  public Map<Integer, IValue> safeGarbageCollector(Set<Integer> usedAddresses, Map<Integer, IValue> heap) {
-    Map<Integer, IValue> newHeap = new HashMap<Integer, IValue>();
-    for (Integer key : heap.keySet()) {
-      if (usedAddresses.contains(key)) {
-        newHeap.put(key, heap.get(key));
-      }
-    }
-    return newHeap;
   }
 
   @Override
