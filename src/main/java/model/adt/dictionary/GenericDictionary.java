@@ -68,4 +68,13 @@ public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
     public void setMap(Map<K, V> dictionary) {
         this.dictionary = dictionary;
     }
+
+    @Override
+    public IGenericDictionary<K, V> deepCopy() {
+        IGenericDictionary<K, V> newDictionary = new GenericDictionary<K, V>();
+        for (K key : this.dictionary.keySet()) {
+            newDictionary.put(key, this.dictionary.get(key));
+        }
+        return newDictionary;
+    }
 }

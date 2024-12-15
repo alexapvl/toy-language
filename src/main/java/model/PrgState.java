@@ -3,9 +3,7 @@ package model;
 import java.io.BufferedReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import model.adt.dictionary.GenericDictionary;
 import model.adt.dictionary.IGenericDictionary;
-import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
 import model.adt.stack.IGenericStack;
@@ -119,18 +117,4 @@ public class PrgState {
     }
     return currentStmt.execute(this);
   }
-
-  public IGenericDictionary<String, IValue> cloneSymTable() {
-    IGenericDictionary<String, IValue> newSymTable = new GenericDictionary<>();
-    IGenericDictionary<String, IValue> symTable = this.getSymTable();
-    for (String key : symTable.getMap().keySet()) {
-      try {
-        newSymTable.put(key, symTable.lookup(key));
-      } catch (KeyNotFoundAppException error) {
-        System.err.println(error.getMessage());
-      }
-    }
-    return newSymTable;
-  }
-
 }
