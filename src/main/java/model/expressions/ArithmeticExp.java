@@ -2,6 +2,7 @@ package model.expressions;
 
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
+import model.types.IType;
 import model.types.IntegerType;
 import model.values.IValue;
 import model.values.IntegerValue;
@@ -63,5 +64,19 @@ public class ArithmeticExp implements IExp {
   @Override
   public String toString() {
     return "(" + first.toString() + " " + op.toString() + " " + second.toString() + ")";
+  }
+
+  @Override
+  public IType typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    IType type1, type2;
+    type1 = first.typecheck(typeEnv);
+    type2 = second.typecheck(typeEnv);
+    if (type1.equals(new IntegerType())) {
+      if (type2.equals(new IntegerType())) {
+        return new IntegerType();
+      } else
+        throw new AppException("Second expression type is not IntegerType, it is: " + type2);
+    } else
+      throw new AppException("First expression type is not IntegerType, it is: " + type1);
   }
 }

@@ -6,6 +6,7 @@ import model.exceptions.AppException;
 import model.values.IValue;
 import model.values.BooleanValue;
 import model.types.BooleanType;
+import model.types.IType;
 import model.expressions.enums.LogicalOp;
 
 public class LogicalExp implements IExp {
@@ -56,5 +57,19 @@ public class LogicalExp implements IExp {
   @Override
   public String toString() {
     return "(" + first.toString() + " " + op + " " + second.toString() + ")";
+  }
+
+  @Override
+  public IType typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    IType type1, type2;
+    type1 = first.typecheck(typeEnv);
+    type2 = second.typecheck(typeEnv);
+    if (type1.equals(new BooleanType())) {
+      if (type2.equals(new BooleanType())) {
+        return new BooleanType();
+      } else
+        throw new AppException("Second expression type is not BooleanType, it is: " + type2);
+    } else
+      throw new AppException("First expression type is not BooleanType, it is: " + type1);
   }
 }

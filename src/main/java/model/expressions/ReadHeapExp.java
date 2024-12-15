@@ -3,6 +3,8 @@ package model.expressions;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
+import model.types.IType;
+import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
@@ -39,5 +41,16 @@ public class ReadHeapExp implements IExp {
   @Override
   public String toString() {
     return "readHeap(" + this.exp + ")";
+  }
+
+  @Override
+  public IType typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    IType type = this.exp.typecheck(typeEnv);
+    if (type instanceof RefType) {
+      RefType refType = (RefType) type;
+      return refType.getInner();
+    } else {
+      throw new AppException("The expression does not evaluate to a RefType");
+    }
   }
 }

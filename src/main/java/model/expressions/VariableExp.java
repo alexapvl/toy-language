@@ -6,6 +6,7 @@ import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.exceptions.ArithmeticExpAppException;
+import model.types.IType;
 
 public class VariableExp implements IExp {
   private String id;
@@ -38,4 +39,8 @@ public class VariableExp implements IExp {
     return id;
   }
 
+  @Override
+  public IType typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    return typeEnv.lookup(this.id);
+  }
 }

@@ -5,6 +5,7 @@ import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.exceptions.ArithmeticExpAppException;
+import model.types.IType;
 
 public class ValueExp implements IExp {
   private IValue value;
@@ -27,5 +28,10 @@ public class ValueExp implements IExp {
   @Override
   public String toString() {
     return this.value.toString();
+  }
+
+  @Override
+  public IType typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    return this.value.getType();
   }
 }
