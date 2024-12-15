@@ -32,6 +32,10 @@ public class Controller {
     return this.displayFlag;
   }
 
+  public IRepository getRepo() {
+    return this.repo;
+  }
+
   public Set<Integer> getUsedAddresses() {
     Set<Integer> usedAddresses = new HashSet<>();
     // Get used addresses from all symTables since there is one symTable for each
