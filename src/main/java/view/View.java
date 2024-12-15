@@ -213,15 +213,28 @@ public class View {
                     new CompoundStmt(
                         new ForkStmt(
                             new CompoundStmt(
-                                new WriteHeapStmt("a", new ValueExp(new IntegerValue(30))),
+                                new WriteHeapStmt("a",
+                                    new ValueExp(new IntegerValue(30))),
                                 new CompoundStmt(
-                                    new AssignmentStmt("v", new ValueExp(new IntegerValue(32))),
+                                    new AssignmentStmt("v",
+                                        new ValueExp(new IntegerValue(32))),
                                     new CompoundStmt(
                                         new PrintStmt(new VariableExp("v")),
-                                        new PrintStmt(new ReadHeapExp(new VariableExp("a"))))))),
+                                        new PrintStmt(new ReadHeapExp(
+                                            new VariableExp("a"))))))),
                         new CompoundStmt(
                             new PrintStmt(new VariableExp("v")),
                             new PrintStmt(new ReadHeapExp(new VariableExp("a")))))))));
+  }
+
+  private static IStmt createExample11() {
+    // example with type error!
+    // int v; v = false; Print(v)
+    return new CompoundStmt(
+        new VariableDeclarationStmt("v", new IntegerType()),
+        new CompoundStmt(
+            new AssignmentStmt("v", new ValueExp(new BooleanValue(false))),
+            new PrintStmt(new VariableExp("v"))));
   }
 
   private static PrgState createPrgState(IStmt originalProgram) {
@@ -252,6 +265,7 @@ public class View {
     Controller ctr8 = createController(createExample8(), "log8.log", false);
     Controller ctr9 = createController(createExample9(), "log9.log", false);
     Controller ctr10 = createController(createExample10(), "log10.log", false);
+    Controller ctr11 = createController(createExample11(), "log11.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -268,11 +282,13 @@ public class View {
     Command cmm7 = new RunExampleCommand("7",
         "Ref int v; new(v,20); print(readHeap(v)); writeHeap(v,30); print(readHeap(v) + 5);", ctr7);
     Command cmm8 = new RunExampleCommand("8", "int v; v=4; (while(v>0) print(v); v=v-1); print(v)", ctr8);
-    Command cmm9 = new RunExampleCommand("9", "Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))",
+    Command cmm9 = new RunExampleCommand("9",
+        "Ref int v;new(v,20);Ref Ref int a; new(a,v); new(v,30);print(rH(rH(a)))",
         ctr9);
     Command cmm10 = new RunExampleCommand("10",
         "int v; Ref int a; v = 10; new(a, 22); fork(wH(a, 30); v = 32; print(v); print(rH(a))); print(v); print(rH(a));",
         ctr10);
+    Command cmm11 = new RunExampleCommand("11", "int v; v = false; Print(v) -> has TYPE ERROR", ctr11);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -285,6 +301,7 @@ public class View {
     textMenu.addCommand(cmm8);
     textMenu.addCommand(cmm9);
     textMenu.addCommand(cmm10);
+    textMenu.addCommand(cmm11);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;

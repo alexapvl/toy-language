@@ -18,8 +18,8 @@ public class TextMenu {
   }
 
   private void printMenu() {
-    for (Command command : this.commands.values()) {
-      String line = String.format("%4s : %s", command.getKey(), command.getDescription());
+    for (String key : this.commands.keySet()) {
+      String line = String.format("%4s : %s", this.commands.get(key).getKey(), this.commands.get(key).getDescription());
       System.out.println(line);
     }
   }
