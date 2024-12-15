@@ -39,6 +39,7 @@ public class VariableDeclarationStmt implements IStmt {
 
   @Override
   public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    typeEnv.put(this.id, this.type);
     return typeEnv;
   }
 }

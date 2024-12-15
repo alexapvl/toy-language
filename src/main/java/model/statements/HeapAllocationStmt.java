@@ -60,6 +60,7 @@ public class HeapAllocationStmt implements IStmt {
     IType varType = typeEnv.lookup(varName);
     IType exprType = expr.typecheck(typeEnv);
     if (varType.equals(new RefType(exprType))) {
+      typeEnv.put(varName, new RefType(exprType));
       return typeEnv;
     } else {
       throw new AppException("HeapAllocationStmt: right hand side and left hand side have different types");
