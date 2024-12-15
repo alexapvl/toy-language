@@ -6,6 +6,7 @@ import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
+import model.types.IType;
 import model.values.IValue;
 
 public class AssignmentStmt implements IStmt {
@@ -55,4 +56,14 @@ public class AssignmentStmt implements IStmt {
     return this.id + "=" + exp.toString();
   }
 
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    IType typeVar = typeEnv.lookup(this.id);
+    IType typeExp = this.exp.typecheck(typeEnv);
+    if (typeExp.equals(typeVar)) {
+      return typeEnv;
+    } else {
+      throw new AppException("Type of expression and type of variable " + this.id + " do not match");
+    }
+  }
 }

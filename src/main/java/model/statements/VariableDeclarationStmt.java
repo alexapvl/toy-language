@@ -36,4 +36,9 @@ public class VariableDeclarationStmt implements IStmt {
   public String toString() {
     return type.toString() + " " + this.id;
   }
+
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv) throws AppException {
+    return typeEnv;
+  }
 }

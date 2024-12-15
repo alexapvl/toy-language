@@ -6,6 +6,7 @@ import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.types.BooleanType;
+import model.types.IType;
 import model.values.BooleanValue;
 import model.values.IValue;
 
@@ -46,4 +47,13 @@ public class WhileStmt implements IStmt {
     return "while(" + exp.toString() + ") {" + stmt.toString() + "}";
   }
 
+  @Override
+  public IGenericDictionary<String, IType> typecheck(
+      IGenericDictionary<String, IType> typeEnv) throws AppException {
+    IType expType = exp.typecheck(typeEnv);
+    if (expType.equals(new BooleanType())) {
+      return typeEnv;
+    }
+    throw new AppException("The condition of while is not a boolean");
+  }
 }

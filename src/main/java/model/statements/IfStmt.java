@@ -7,6 +7,7 @@ import model.adt.stack.IGenericStack;
 import model.exceptions.AppException;
 import model.expressions.IExp;
 import model.types.BooleanType;
+import model.types.IType;
 import model.values.BooleanValue;
 import model.values.IValue;
 
@@ -56,4 +57,16 @@ public class IfStmt implements IStmt {
     return "if (" + this.exp + ") then (" + this.thenStmt + ") else (" + this.elseStmt + ")";
   }
 
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv)
+      throws AppException {
+    IType expType = exp.typecheck(typeEnv);
+    if (expType.equals(new BooleanType())) {
+      thenStmt.typecheck(typeEnv.deepCopy());
+      elseStmt.typecheck(typeEnv.deepCopy());
+      return typeEnv;
+    } else {
+      throw new AppException("The condition in the if statement is not of type BooleanType");
+    }
+  }
 }

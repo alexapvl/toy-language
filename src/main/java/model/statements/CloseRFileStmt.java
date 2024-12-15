@@ -9,6 +9,7 @@ import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
+import model.types.IType;
 import model.types.StringType;
 import model.values.IValue;
 import model.values.StringValue;
@@ -68,5 +69,12 @@ public class CloseRFileStmt implements IStmt {
   @Override
   public String toString() {
     return "closeRFile(" + this.exp + ")";
+  }
+
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv)
+      throws AppException {
+    this.exp.typecheck(typeEnv);
+    return typeEnv;
   }
 }

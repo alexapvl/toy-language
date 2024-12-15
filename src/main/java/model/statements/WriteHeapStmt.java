@@ -5,6 +5,8 @@ import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
+import model.types.IType;
+import model.types.RefType;
 import model.values.IValue;
 import model.values.RefValue;
 
@@ -54,5 +56,17 @@ public class WriteHeapStmt implements IStmt {
   @Override
   public String toString() {
     return "writeHeap(" + this.varName + ", " + this.expr + ")";
+  }
+
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv)
+      throws AppException {
+    IType varType = typeEnv.lookup(varName);
+    IType exprType = expr.typecheck(typeEnv);
+    if (varType.equals(new RefType(exprType))) {
+      return typeEnv;
+    } else {
+      throw new AppException("WriteHeap: right hand side and left hand side have different types");
+    }
   }
 }

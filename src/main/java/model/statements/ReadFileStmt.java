@@ -9,6 +9,7 @@ import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 import model.adt.heap.IGenericHeap;
 import model.exceptions.AppException;
 import model.expressions.IExp;
+import model.types.IType;
 import model.types.IntegerType;
 import model.types.StringType;
 import model.values.IValue;
@@ -111,4 +112,13 @@ public class ReadFileStmt implements IStmt {
     return "readFile(" + this.exp + ", " + this.varName + ")";
   }
 
+  @Override
+  public IGenericDictionary<String, IType> typecheck(IGenericDictionary<String, IType> typeEnv)
+      throws AppException {
+    IType expType = this.exp.typecheck(typeEnv);
+    if (expType.equals(new StringType())) {
+      return typeEnv;
+    }
+    throw new AppException("Expression does not evaluate to a string type");
+  }
 }
