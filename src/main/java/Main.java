@@ -22,7 +22,7 @@ public class Main extends Application {
         root.getChildren().add(label);
 
         Scene scene = new Scene(root, 300, 200);
-        primaryStage.setTitle("JavaFX Application");
+        primaryStage.setTitle("Toy Language Interpreter");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
