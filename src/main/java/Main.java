@@ -12,7 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-// run command: mvn clean javafx:run
+// run command: mvn javafx:run
+// clean compilation: mvn clean javafx:compile
 
 public class Main extends Application {
     @Override
