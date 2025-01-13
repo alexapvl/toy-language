@@ -26,6 +26,7 @@ public class Controller {
   public Controller(IRepository repo, boolean displayFlag) {
     this.repo = repo;
     this.displayFlag = displayFlag;
+    this.executor = Executors.newFixedThreadPool(2);
   }
 
   public boolean getDisplayFlag() {
