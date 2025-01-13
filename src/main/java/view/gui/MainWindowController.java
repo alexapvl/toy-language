@@ -137,6 +137,15 @@ public class MainWindowController {
       alert.showAndWait();
     }
     this.heapTableView.setItems(heapEntries);
+
+    // Add a listener to refresh the heap table view whenever its items change
+    this.heapTableView.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Map.Entry<Integer, IValue>> change) -> {
+      while (change.next()) {
+        if (change.wasUpdated()) {
+          this.heapTableView.refresh();
+        }
+      }
+    });
   }
 
   private void populateOutput() {
@@ -254,8 +263,9 @@ public class MainWindowController {
       controller.oneStepForAllPrg(prgList);
       populateAll();
       
-      // Force refresh the symbol table view to show updated values
+      // Force refresh the symbol table and heap table views to show updated values
       this.symTableView.refresh();
+      this.heapTableView.refresh();
     } catch (Exception e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error");
