@@ -20,6 +20,8 @@ public interface IGenericDictionary<K, V> {
 
   List<V> getValues();
 
+  List<K> getKeys();
+
   void setMap(Map<K, V> dictionary);
 
   IGenericDictionary<K, V> deepCopy();

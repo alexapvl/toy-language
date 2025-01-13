@@ -65,6 +65,11 @@ public class GenericDictionary<K, V> implements IGenericDictionary<K, V> {
     }
 
     @Override
+    public List<K> getKeys() {
+        return new LinkedList<K>(this.dictionary.keySet());
+    }
+
+    @Override
     public void setMap(Map<K, V> dictionary) {
         this.dictionary = dictionary;
     }
