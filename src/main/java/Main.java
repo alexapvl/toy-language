@@ -1,15 +1,7 @@
-// import view.Interpreter;
-
-// public class Main {
-//     public static void main(String[] args) {
-//         Interpreter.main(args);
-//     }
-// }
-
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 // run command: mvn javafx:run
@@ -17,14 +9,12 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
     @Override
-    public void start(Stage primaryStage) {
-        Label label = new Label("Hello, JavaFX!");
-        StackPane root = new StackPane();
-        root.getChildren().add(label);
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ProgramList.fxml"));
+        Parent root = loader.load();
 
-        Scene scene = new Scene(root, 300, 200);
-        primaryStage.setTitle("Toy Language Interpreter");
-        primaryStage.setScene(scene);
+        primaryStage.setTitle("Select Program");
+        primaryStage.setScene(new Scene(root, 400, 500));
         primaryStage.show();
     }
 
