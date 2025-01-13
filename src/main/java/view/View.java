@@ -306,4 +306,33 @@ public class View {
 
     return textMenu;
   }
+
+  public static Controller createControllerForGUI(String key) {
+    switch (key) {
+      case "1":
+        return createController(createExample1(), "log1.log", false);
+      case "2":
+        return createController(createExample2(), "log2.log", false);
+      case "3":
+        return createController(createExample3(), "log3.log", false);
+      case "4":
+        return createController(createExample4(), "log4.log", false);
+      case "5":
+        return createController(createExample5(), "log5.log", false);
+      case "6":
+        return createController(createExample6(), "log6.log", false);
+      case "7":
+        return createController(createExample7(), "log7.log", false);
+      case "8":
+        return createController(createExample8(), "log8.log", false);
+      case "9":
+        return createController(createExample9(), "log9.log", false);
+      case "10":
+        return createController(createExample10(), "log10.log", false);
+      case "11":
+        return createController(createExample11(), "log11.log", false);
+      default:
+        return null;
+    }
+  }
 }

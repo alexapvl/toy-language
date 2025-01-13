@@ -24,6 +24,10 @@ public class TextMenu {
     }
   }
 
+  public Map<String, Command> getCommands() {
+    return this.commands;
+  }
+
   public void show() {
     Scanner scanner = new Scanner(System.in);
     try (scanner) {
