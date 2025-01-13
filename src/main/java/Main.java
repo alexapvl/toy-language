@@ -3,6 +3,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import view.Interpreter;
 
 // run command: mvn javafx:run
 // clean compilation: mvn clean javafx:compile
@@ -19,6 +20,13 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        // gui = 1, non-gui = 2
+        int applicationType = 1;
+        if (applicationType == 1) {
+          launch(args);
+        } else if (applicationType == 2) {
+            Interpreter.main(args);
+        }
+        
     }
 }
