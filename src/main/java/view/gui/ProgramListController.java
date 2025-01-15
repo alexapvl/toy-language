@@ -12,6 +12,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import model.adt.dictionary.GenericDictionary;
+import model.adt.dictionary.IGenericDictionary;
+import model.types.IType;
 import view.TextMenu;
 import view.View;
 
@@ -48,11 +51,11 @@ public class ProgramListController {
       System.exit(0); // close the program properly
     }
 
-    // System.out.println(programKey);
-    Controller controller = View.createControllerForGUI(programKey);
-
     // Create and show the main window
     try {
+      Controller controller = View.createControllerForGUI(programKey);
+      IGenericDictionary<String, IType> typeEnv = new GenericDictionary<>();
+      controller.getRepo().getPrgList().get(0).getOriginalProgram().typecheck(typeEnv);
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/MainWindow.fxml"));
       Parent root = loader.load();
       MainWindowController mainWindowController = loader.getController();
