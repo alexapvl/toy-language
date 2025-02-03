@@ -29,6 +29,7 @@ import model.statements.IfStmt;
 import model.statements.OpenRFileStmt;
 import model.statements.PrintStmt;
 import model.statements.ReadFileStmt;
+import model.statements.SwitchStmt;
 import model.statements.VariableDeclarationStmt;
 import model.statements.WhileStmt;
 import model.types.BooleanType;
@@ -237,6 +238,38 @@ public class View {
             new PrintStmt(new VariableExp("v"))));
   }
 
+  private static IStmt createExample12() {
+    // int a; int b; int c;
+    // a=1;b=2;c=5;
+    // (switch(a*10)
+    // (case (b*c) : print(a);print(b))
+    // (case (10) : print(100);print(200))
+    // (default : print(300)));
+    // print(300)
+    return new CompoundStmt(
+        new VariableDeclarationStmt("a", new IntegerType()),
+        new CompoundStmt(
+            new VariableDeclarationStmt("b", new IntegerType()),
+            new CompoundStmt(
+                new VariableDeclarationStmt("c", new IntegerType()),
+                new CompoundStmt(
+                    new AssignmentStmt("a", new ValueExp(new IntegerValue(1))),
+                    new CompoundStmt(
+                        new AssignmentStmt("b", new ValueExp(new IntegerValue(2))),
+                        new CompoundStmt(
+                            new AssignmentStmt("c", new ValueExp(new IntegerValue(5))),
+                            new CompoundStmt(
+                                new SwitchStmt(
+                                    new ArithmeticExp(new VariableExp("a"), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10))),
+                                    new ArithmeticExp(new VariableExp("b"), ArithmeticOp.MULTIPLY, new VariableExp("c")),
+                                    new ValueExp(new IntegerValue(10)),
+                                    new ValueExp(new IntegerValue(0)),
+                                    new CompoundStmt(new PrintStmt(new VariableExp("a")), new PrintStmt(new VariableExp("b"))),
+                                    new CompoundStmt(new PrintStmt(new ValueExp(new IntegerValue(100))), new PrintStmt(new ValueExp(new IntegerValue(200)))),
+                                    new PrintStmt(new ValueExp(new IntegerValue(300)))),
+                                new PrintStmt(new ValueExp(new IntegerValue(300))))))))));
+}
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
@@ -266,6 +299,7 @@ public class View {
     Controller ctr9 = createController(createExample9(), "log9.log", false);
     Controller ctr10 = createController(createExample10(), "log10.log", false);
     Controller ctr11 = createController(createExample11(), "log11.log", false);
+    Controller ctr12 = createController(createExample12(), "logSwitch.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -289,6 +323,7 @@ public class View {
         "int v; Ref int a; v = 10; new(a, 22); fork(wH(a, 30); v = 32; print(v); print(rH(a))); print(v); print(rH(a));",
         ctr10);
     Command cmm11 = new RunExampleCommand("11", "int v; v = false; Print(v) -> has TYPE ERROR", ctr11);
+    Command cmm12 = new RunExampleCommand("12", "switch example", ctr12);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -302,6 +337,7 @@ public class View {
     textMenu.addCommand(cmm9);
     textMenu.addCommand(cmm10);
     textMenu.addCommand(cmm11);
+    textMenu.addCommand(cmm12);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
@@ -331,6 +367,8 @@ public class View {
         return createController(createExample10(), "log10.log", false);
       case "11":
         return createController(createExample11(), "log11.log", false);
+      case "12":
+        return createController(createExample12(), "logSwitch.log", false);
       default:
         return null;
     }
