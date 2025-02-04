@@ -1,6 +1,6 @@
 package model.adt;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
@@ -18,7 +18,7 @@ public interface ICountSemaphore<K, V> {
 
   Map<K, V> getCountSemaphore();
 
-  Collection<V> getValues();
+  List<V> getValues();
 
   int allocate();
 }

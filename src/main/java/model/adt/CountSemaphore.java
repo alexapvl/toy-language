@@ -1,16 +1,15 @@
 package model.adt;
 
-import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javafx.util.Pair;
 import model.adt.dictionary.exceptions.KeyNotFoundAppException;
 
-public class CountSemaphore implements ICountSemaphore<Integer, Pair<Integer, List<Integer>>> {
-  private Map<Integer, Pair<Integer, List<Integer>>> semaphoreTable;
+public class CountSemaphore<K, V> implements ICountSemaphore<K,V> {
+  private Map<K, V> semaphoreTable;
   private AtomicInteger firstFreeAddress;
 
   public CountSemaphore() {
@@ -19,7 +18,7 @@ public class CountSemaphore implements ICountSemaphore<Integer, Pair<Integer, Li
   }
 
   @Override
-  public synchronized Pair<Integer, List<Integer>> lookup(Integer key) throws KeyNotFoundAppException {
+  public synchronized V lookup(K key) throws KeyNotFoundAppException {
     if (!this.semaphoreTable.containsKey(key)) {
       throw new KeyNotFoundAppException("Key not found in semaphore table");
     }
@@ -27,17 +26,17 @@ public class CountSemaphore implements ICountSemaphore<Integer, Pair<Integer, Li
   }
 
   @Override
-  public synchronized void put(Integer key, Pair<Integer, List<Integer>> value) {
+  public synchronized void put(K key, V value) {
     this.semaphoreTable.put(key, value);
   }
 
   @Override
-  public synchronized void remove(Integer key) {
+  public synchronized void remove(K key) {
     this.semaphoreTable.remove(key);
   }
 
   @Override
-  public synchronized boolean contains(Integer key) {
+  public synchronized boolean contains(K key) {
     return this.semaphoreTable.containsKey(key);
   }
 
@@ -48,7 +47,7 @@ public class CountSemaphore implements ICountSemaphore<Integer, Pair<Integer, Li
     }
 
     StringBuilder s = new StringBuilder();
-    for (Integer key : this.semaphoreTable.keySet()) {
+    for (K key : this.semaphoreTable.keySet()) {
       s.append(key.toString()).append("->")
         .append(this.semaphoreTable.get(key).toString())
         .append("\n");
@@ -57,13 +56,13 @@ public class CountSemaphore implements ICountSemaphore<Integer, Pair<Integer, Li
   }
 
   @Override
-  public synchronized Map<Integer, Pair<Integer, List<Integer>>> getCountSemaphore() {
+  public synchronized Map<K, V> getCountSemaphore() {
     return this.semaphoreTable;
   }
 
   @Override
-  public synchronized Collection<Pair<Integer, List<Integer>>> getValues() {
-    return this.semaphoreTable.values();
+  public synchronized List<V> getValues() {
+    return new LinkedList<>(this.semaphoreTable.values());
   }
 
   @Override
