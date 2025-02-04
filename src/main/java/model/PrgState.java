@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedReader;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import model.adt.ILock;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -20,12 +21,13 @@ public class PrgState {
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
   private IGenericHeap<Integer, IValue> heap;
+  private ILock<Integer, Integer> lockTable;
   private static AtomicInteger nextId = new AtomicInteger(1);
   private int id;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
       IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
-      IGenericHeap<Integer, IValue> heap) {
+      IGenericHeap<Integer, IValue> heap, ILock<Integer, Integer> lockTable) {
     this.id = getNextId();
     this.symTable = symTable;
     this.exeStack = exeStack;
@@ -33,6 +35,7 @@ public class PrgState {
     this.originalProgram = originalProgram;
     this.fileTable = fileTable;
     this.heap = heap;
+    this.lockTable = lockTable;
 
     exeStack.push(originalProgram);
   }
@@ -91,6 +94,14 @@ public class PrgState {
 
   public void setHeap(IGenericHeap<Integer, IValue> heap) {
     this.heap = heap;
+  }
+
+  public ILock<Integer, Integer> getLockTable() {
+    return this.lockTable;
+  }
+
+  public void setLockTable(ILock<Integer, Integer> lockTable) {
+    this.lockTable = lockTable;
   }
 
   @Override

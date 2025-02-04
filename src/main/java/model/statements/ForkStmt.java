@@ -18,7 +18,7 @@ public class ForkStmt implements IStmt {
   public PrgState execute(PrgState prg) throws AppException {
     IGenericStack<IStmt> newStack = new GenericStack<>();
     return new PrgState(prg.getSymTable().deepCopy(), newStack, prg.getOutput(), this.stmt, prg.getFileTable(),
-        prg.getHeap());
+        prg.getHeap(), prg.getLockTable());
   }
 
   @Override

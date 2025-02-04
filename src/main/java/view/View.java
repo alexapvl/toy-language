@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import model.expressions.enums.ArithmeticOp;
 import model.expressions.enums.RelationalOp;
 import model.PrgState;
+import model.adt.ILock;
+import model.adt.Lock;
 import model.adt.dictionary.GenericDictionary;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.GenericHeap;
@@ -26,6 +28,10 @@ import model.statements.ForkStmt;
 import model.statements.HeapAllocationStmt;
 import model.statements.IStmt;
 import model.statements.IfStmt;
+import model.statements.LockAcquireStmt;
+import model.statements.LockReleaseStmt;
+import model.statements.NewLockStmt;
+import model.statements.NoOperationStmt;
 import model.statements.OpenRFileStmt;
 import model.statements.PrintStmt;
 import model.statements.ReadFileStmt;
@@ -237,14 +243,97 @@ public class View {
             new PrintStmt(new VariableExp("v"))));
   }
 
+  private static IStmt createExample12() {
+    // Ref int v1; Ref int v2; int x; int q;
+    // new(v1,20);new(v2,30);newLock(x);
+    // fork(
+    // fork(
+    // lock(x);wh(v1,rh(v1)-1);unlock(x)
+    // );
+    // lock(x);wh(v1,rh(v1)*10);unlock(x)
+    // );newLock(q);
+    // fork(
+    // fork(lock(q);wh(v2,rh(v2)+5);unlock(q));
+    // lock(q);wh(v2,rh(v2)*10);unlock(q)
+    // );
+    // nop;nop;nop;nop;
+    // lock(x); print(rh(v1)); unlock(x);
+    // lock(q); print(rh(v2)); unlock(q);
+    // The final Out should be {190 or 199,350 or 305}
+    return new CompoundStmt(
+      new VariableDeclarationStmt("v1", new RefType(new IntegerType())), 
+      new CompoundStmt(
+        new VariableDeclarationStmt("v2", new RefType(new IntegerType())), 
+        new CompoundStmt(
+          new VariableDeclarationStmt("x", new IntegerType()), 
+          new CompoundStmt(
+            new VariableDeclarationStmt("q", new IntegerType()), 
+            new CompoundStmt(
+              new HeapAllocationStmt("v1", new ValueExp(new IntegerValue(20))), 
+              new CompoundStmt(
+                new HeapAllocationStmt("v2", new ValueExp(new IntegerValue(30))), 
+                new CompoundStmt(
+                  new NewLockStmt("x"), 
+                  new CompoundStmt(
+                    new ForkStmt(
+                      new CompoundStmt(
+                        new ForkStmt(
+                        new CompoundStmt(
+                          new LockAcquireStmt("x"), 
+                          new CompoundStmt(
+                            new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.SUBTRACT, new ValueExp(new IntegerValue(1)))), 
+                            new LockReleaseStmt("x")))), 
+                      new CompoundStmt(
+                        new LockAcquireStmt("x"), 
+                        new CompoundStmt(
+                          new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10)))), 
+                          new LockReleaseStmt("x"))))), 
+                    new CompoundStmt(
+                      new NewLockStmt("q"), 
+                      new CompoundStmt(
+                        new ForkStmt(
+                          new CompoundStmt(
+                            new ForkStmt(
+                              new CompoundStmt(
+                                new LockAcquireStmt("q"), 
+                                new CompoundStmt(
+                                  new WriteHeapStmt("v2", new ArithmeticExp(new ReadHeapExp(new VariableExp("v2")), ArithmeticOp.ADD, new ValueExp(new IntegerValue(5)))), 
+                                  new LockReleaseStmt("q")))), 
+                            new CompoundStmt(
+                              new LockAcquireStmt("q"), 
+                              new CompoundStmt(
+                                new WriteHeapStmt("v2", new ArithmeticExp(new ReadHeapExp(new VariableExp("v2")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10)))), 
+                                new LockReleaseStmt("q"))))), 
+                        new CompoundStmt(
+                          new NoOperationStmt(), 
+                          new CompoundStmt(
+                            new NoOperationStmt(), 
+                            new CompoundStmt(
+                              new NoOperationStmt(), 
+                              new CompoundStmt(
+                                new NoOperationStmt(), 
+                                new CompoundStmt(
+                                  new LockAcquireStmt("x"), 
+                                  new CompoundStmt(
+                                    new PrintStmt(new ReadHeapExp(new VariableExp("v1"))), 
+                                    new CompoundStmt(
+                                      new LockReleaseStmt("x"), 
+                                      new CompoundStmt(
+                                        new LockAcquireStmt("q"), 
+                                        new CompoundStmt(
+                                          new PrintStmt(new ReadHeapExp(new VariableExp("v2"))), 
+                                          new LockReleaseStmt("q"))))))))))))))))))));
+  }
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
     IGenericList<IValue> output = new GenericList<>();
     IGenericDictionary<StringValue, BufferedReader> fileTable = new GenericDictionary<>();
     IGenericHeap<Integer, IValue> heap = new GenericHeap<>();
+    ILock<Integer, Integer> lockTable = new Lock<>();
 
-    return new PrgState(symTable, exeStack, output, originalProgram, fileTable, heap);
+    return new PrgState(symTable, exeStack, output, originalProgram, fileTable, heap, lockTable);
   }
 
   private static Controller createController(IStmt originalProgram, String logFilePath, boolean displayFlag) {
@@ -266,6 +355,7 @@ public class View {
     Controller ctr9 = createController(createExample9(), "log9.log", false);
     Controller ctr10 = createController(createExample10(), "log10.log", false);
     Controller ctr11 = createController(createExample11(), "log11.log", false);
+    Controller ctr12 = createController(createExample12(), "log12.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -289,6 +379,7 @@ public class View {
         "int v; Ref int a; v = 10; new(a, 22); fork(wH(a, 30); v = 32; print(v); print(rH(a))); print(v); print(rH(a));",
         ctr10);
     Command cmm11 = new RunExampleCommand("11", "int v; v = false; Print(v) -> has TYPE ERROR", ctr11);
+    Command cmm12 = new RunExampleCommand("12", "Lock Example", ctr12);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -302,6 +393,7 @@ public class View {
     textMenu.addCommand(cmm9);
     textMenu.addCommand(cmm10);
     textMenu.addCommand(cmm11);
+    textMenu.addCommand(cmm12);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
@@ -331,6 +423,8 @@ public class View {
         return createController(createExample10(), "log10.log", false);
       case "11":
         return createController(createExample11(), "log11.log", false);
+      case "12":
+        return createController(createExample12(), "log12.log", false);
       default:
         return null;
     }
