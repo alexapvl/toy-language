@@ -1,11 +1,14 @@
 package model.statements;
 
+import java.util.Stack;
+
 import model.PrgState;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.stack.GenericStack;
 import model.adt.stack.IGenericStack;
 import model.exceptions.AppException;
 import model.types.IType;
+import model.values.IValue;
 
 public class ForkStmt implements IStmt {
   private IStmt stmt;
@@ -17,8 +20,12 @@ public class ForkStmt implements IStmt {
   @Override
   public PrgState execute(PrgState prg) throws AppException {
     IGenericStack<IStmt> newStack = new GenericStack<>();
-    return new PrgState(prg.getSymTable().deepCopy(), newStack, prg.getOutput(), this.stmt, prg.getFileTable(),
-        prg.getHeap());
+    Stack<IGenericDictionary<String, IValue>> cloneSymTable = new Stack<>();
+    for (IGenericDictionary<String, IValue> symTable : prg.getSymTables()) {
+      cloneSymTable.add(symTable.deepCopy());
+    }
+    return new PrgState(cloneSymTable, newStack, prg.getOutput(), this.stmt, prg.getFileTable(),
+        prg.getHeap(), prg.getProcedureTable());
   }
 
   @Override

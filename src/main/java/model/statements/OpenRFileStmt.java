@@ -24,7 +24,7 @@ public class OpenRFileStmt implements IStmt {
   @Override
   public PrgState execute(PrgState prg) throws AppException {
     IValue value;
-    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
+    IGenericDictionary<String, IValue> symTable = prg.getTopSymTable();
     IGenericDictionary<StringValue, BufferedReader> fileTable = prg.getFileTable();
     IGenericHeap<Integer, IValue> heap = prg.getHeap();
 

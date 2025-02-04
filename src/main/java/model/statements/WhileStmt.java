@@ -20,7 +20,7 @@ public class WhileStmt implements IStmt {
   }
 
   public PrgState execute(PrgState prg) throws AppException {
-    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
+    IGenericDictionary<String, IValue> symTable = prg.getTopSymTable();
     IGenericHeap<Integer, IValue> heap = prg.getHeap();
     IValue val = exp.eval(symTable, heap);
 

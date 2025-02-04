@@ -20,7 +20,7 @@ public class AssignmentStmt implements IStmt {
 
   @Override
   public PrgState execute(PrgState state) throws AppException {
-    IGenericDictionary<String, IValue> symTable = state.getSymTable();
+    IGenericDictionary<String, IValue> symTable = state.getTopSymTable();
     IGenericHeap<Integer, IValue> heap = state.getHeap();
     if (symTable.contains(this.id)) {
       IValue val;

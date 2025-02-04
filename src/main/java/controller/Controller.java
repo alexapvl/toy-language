@@ -42,7 +42,7 @@ public class Controller {
     // Get used addresses from all symTables since there is one symTable for each
     // program state
     for (PrgState prg : this.repo.getPrgList()) {
-      for (IValue value : prg.getSymTable().getValues()) {
+      for (IValue value : prg.getTopSymTable().getValues()) {
         if (value instanceof RefValue) {
           usedAddresses.add(((RefValue) value).getAddr());
         }

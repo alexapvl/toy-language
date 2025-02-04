@@ -17,7 +17,7 @@ public class VariableDeclarationStmt implements IStmt {
 
   @Override
   public PrgState execute(PrgState prg) throws AppException {
-    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
+    IGenericDictionary<String, IValue> symTable = prg.getTopSymTable();
 
     if (symTable.contains(this.id)) {
       throw new AppException("Variable " + this.id + " is already defined");

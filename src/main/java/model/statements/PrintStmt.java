@@ -17,7 +17,7 @@ public class PrintStmt implements IStmt {
 
   @Override
   public PrgState execute(PrgState prg) throws AppException {
-    IGenericDictionary<String, IValue> symTable = prg.getSymTable();
+    IGenericDictionary<String, IValue> symTable = prg.getTopSymTable();
     IGenericHeap<Integer, IValue> heap = prg.getHeap();
     IValue val;
     try {

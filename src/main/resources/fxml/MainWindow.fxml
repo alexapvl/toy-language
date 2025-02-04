@@ -25,6 +25,15 @@
                 </columns>
             </TableView>
 
+            <Label text="ProcedureTable"/>
+            <TableView fx:id="procedureTableView" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="procedureNameColumn" text="Address"/>
+                    <TableColumn fx:id="procedureParamsColumn" text="Value"/>
+                    <TableColumn fx:id="procedureBodyColumn" text="Value"/>
+                </columns>
+            </TableView>
+
             <Label text="Output"/>
             <ListView fx:id="outputListView" VBox.vgrow="ALWAYS"/>
 

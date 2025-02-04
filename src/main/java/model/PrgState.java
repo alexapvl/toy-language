@@ -1,8 +1,12 @@
 package model;
 
 import java.io.BufferedReader;
+import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javafx.util.Pair;
+import model.adt.IProcedureTable;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -14,25 +18,27 @@ import model.values.IValue;
 import model.values.StringValue;
 
 public class PrgState {
-  private IGenericDictionary<String, IValue> symTable;
+  private Stack<IGenericDictionary<String, IValue>> symTables;
   private IGenericStack<IStmt> exeStack;
   private IGenericList<IValue> out;
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
   private IGenericHeap<Integer, IValue> heap;
+  private IProcedureTable<String, Pair<List<String> , IStmt>> procedureTable;
   private static AtomicInteger nextId = new AtomicInteger(1);
   private int id;
 
-  public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
+  public PrgState(Stack<IGenericDictionary<String, IValue>> symTables, IGenericStack<IStmt> exeStack,
       IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
-      IGenericHeap<Integer, IValue> heap) {
+      IGenericHeap<Integer, IValue> heap, IProcedureTable<String, Pair<List<String>, IStmt>> procedureTable) {
     this.id = getNextId();
-    this.symTable = symTable;
+    this.symTables = symTables;
     this.exeStack = exeStack;
     this.out = out;
     this.originalProgram = originalProgram;
     this.fileTable = fileTable;
     this.heap = heap;
+    this.procedureTable = procedureTable;
 
     exeStack.push(originalProgram);
   }
@@ -45,12 +51,16 @@ public class PrgState {
     return this.id;
   }
 
-  public IGenericDictionary<String, IValue> getSymTable() {
-    return symTable;
+  public Stack<IGenericDictionary<String, IValue>> getSymTables() {
+    return symTables;
   }
 
-  public void setSymTable(IGenericDictionary<String, IValue> symTable) {
-    this.symTable = symTable;
+  public IGenericDictionary<String, IValue> getTopSymTable() {
+    return this.symTables.peek();
+  }
+
+  public void setSymTable(Stack<IGenericDictionary<String, IValue>> symTables) {
+    this.symTables = symTables;
   }
 
   public IGenericStack<IStmt> getExeStack() {
@@ -93,10 +103,18 @@ public class PrgState {
     this.heap = heap;
   }
 
+  public IProcedureTable<String, Pair<List<String>, IStmt>> getProcedureTable() {
+    return this.procedureTable;
+  }
+
+  public void setProcedureTable(IProcedureTable<String, Pair<List<String>, IStmt>> procedureTable) {
+    this.procedureTable = procedureTable;
+  }
+
   @Override
   public String toString() {
-    return "Program ID: " + this.id + "\nExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
-        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
+    return "Program ID: " + this.id + "\nExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTables
+        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap + "\nProcedureTable:\n" + this.procedureTable;
   }
 
   public boolean isNotCompleted() {

@@ -17,7 +17,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.util.Pair;
 import model.PrgState;
+import model.adt.IProcedureTable;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -39,6 +41,15 @@ public class MainWindowController {
   private TableColumn<Map.Entry<Integer, IValue>, String> heapAddressColumn;
   @FXML
   private TableColumn<Map.Entry<Integer, IValue>, String> heapValueColumn;
+
+  @FXML
+  private TableView<Map.Entry<String, Pair<List<String>, IStmt>>> procedureTableView;
+  @FXML
+  private TableColumn<Map.Entry<String, Pair<List<String>, IStmt>>, String> procedureNameColumn;
+  @FXML
+  private TableColumn<Map.Entry<String, Pair<List<String>, IStmt>>, String> procedureParamsColumn;
+  @FXML
+  private TableColumn<Map.Entry<String, Pair<List<String>, IStmt>>, String> procedureBodyColumn;
 
   @FXML
   private ListView<String> outputListView;
@@ -68,6 +79,14 @@ public class MainWindowController {
     // For the value column, convert the IValue to String
     this.heapValueColumn
       .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().toString()));
+
+    // Configure how to display procedure table entries
+    this.procedureNameColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().toString()));
+    this.procedureParamsColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().getKey().toString()));
+    this.procedureBodyColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().getValue().toString()));
 
     // Configure how to display symbol table entries:
     // For variable names, use the String key directly
@@ -105,6 +124,7 @@ public class MainWindowController {
     populateFileTable();
     populatePrgStateIdentifiers();
     populateNumberOfProgramStates();
+    populateProcedureTable();
 
     // select the first program state from the list if none are selected
     if (this.selectedProgram == null && !controller.getRepo().getPrgList().isEmpty()) {
@@ -140,6 +160,30 @@ public class MainWindowController {
 
     // Add a listener to refresh the heap table view whenever its items change
     this.heapTableView.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Map.Entry<Integer, IValue>> change) -> {
+      while (change.next()) {
+        if (change.wasUpdated()) {
+          this.heapTableView.refresh();
+        }
+      }
+    });
+  }
+
+  private void populateProcedureTable() {
+    IProcedureTable<String, Pair<List<String>, IStmt>> procedureTable = this.controller.getRepo().getPrgList().get(0).getProcedureTable();
+    ObservableList<Map.Entry<String, Pair<List<String>, IStmt>>> procedureTableEntries = FXCollections.observableArrayList();
+    try {
+      procedureTableEntries.addAll(procedureTable.getProcedures().entrySet());
+    } catch (Exception e) {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error accessing procedures table: " + e.getMessage());
+      alert.showAndWait();
+    }
+    this.procedureTableView.setItems(procedureTableEntries);
+
+    // Add a listener to refresh the procedure table view whenever its items change
+    this.procedureTableView.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Map.Entry<String, Pair<List<String>, IStmt>>> change) -> {
       while (change.next()) {
         if (change.wasUpdated()) {
           this.heapTableView.refresh();
@@ -199,7 +243,7 @@ public class MainWindowController {
   private void populateSymTable() {
     ObservableList<Map.Entry<String, IValue>> symTableEntries = FXCollections.observableArrayList();
     if (this.selectedProgram != null) {
-      IGenericDictionary<String, IValue> symTable = this.selectedProgram.getSymTable();
+      IGenericDictionary<String, IValue> symTable = this.selectedProgram.getTopSymTable();
       try {
         symTableEntries.addAll(symTable.getMap().entrySet());
       } catch (Exception e) {
