@@ -1,8 +1,11 @@
 package model;
 
 import java.io.BufferedReader;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import model.adt.IToySemaphore;
+import model.adt.Tuple;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -20,12 +23,13 @@ public class PrgState {
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
   private IGenericHeap<Integer, IValue> heap;
+  private IToySemaphore<Integer, Tuple<Integer, List<Integer>, Integer>> toySemaphoreTable;
   private static AtomicInteger nextId = new AtomicInteger(1);
   private int id;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
       IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
-      IGenericHeap<Integer, IValue> heap) {
+      IGenericHeap<Integer, IValue> heap, IToySemaphore<Integer, Tuple<Integer, List<Integer>, Integer>> toySemaphoreTable) {
     this.id = getNextId();
     this.symTable = symTable;
     this.exeStack = exeStack;
@@ -33,6 +37,7 @@ public class PrgState {
     this.originalProgram = originalProgram;
     this.fileTable = fileTable;
     this.heap = heap;
+    this.toySemaphoreTable = toySemaphoreTable;
 
     exeStack.push(originalProgram);
   }
@@ -93,10 +98,18 @@ public class PrgState {
     this.heap = heap;
   }
 
+  public IToySemaphore<Integer, Tuple<Integer, List<Integer>, Integer>> getToySemaphoreTable() {
+    return this.toySemaphoreTable;
+  }
+
+  public void setToySemaphoreTable(IToySemaphore<Integer, Tuple<Integer, List<Integer>, Integer>> toySemaphoreTable) {
+    this.toySemaphoreTable = toySemaphoreTable;
+  }
+
   @Override
   public String toString() {
     return "Program ID: " + this.id + "\nExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
-        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
+        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap + "\nToy Semaphore Table:\n" + this.toySemaphoreTable;
   }
 
   public boolean isNotCompleted() {

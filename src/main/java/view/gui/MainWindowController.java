@@ -18,6 +18,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import model.PrgState;
+import model.adt.IToySemaphore;
+import model.adt.Tuple;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -39,6 +41,15 @@ public class MainWindowController {
   private TableColumn<Map.Entry<Integer, IValue>, String> heapAddressColumn;
   @FXML
   private TableColumn<Map.Entry<Integer, IValue>, String> heapValueColumn;
+
+  @FXML
+  private TableView<Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>> toySemaphoreTableView;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>, String> toySemaphoreAddressColumn;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>, String> toySemaphoreValueColumn;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>, String> toySemaphoreListColumn;
 
   @FXML
   private ListView<String> outputListView;
@@ -68,6 +79,14 @@ public class MainWindowController {
     // For the value column, convert the IValue to String
     this.heapValueColumn
       .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().toString()));
+
+    this.toySemaphoreAddressColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().toString()));
+    this.toySemaphoreValueColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getValue().getV1() - cellData.getValue().getValue().getV3())));
+    this.toySemaphoreListColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().getV2().toString()));
+
 
     // Configure how to display symbol table entries:
     // For variable names, use the String key directly
@@ -105,6 +124,7 @@ public class MainWindowController {
     populateFileTable();
     populatePrgStateIdentifiers();
     populateNumberOfProgramStates();
+    populateToySemaphoreTable();
 
     // select the first program state from the list if none are selected
     if (this.selectedProgram == null && !controller.getRepo().getPrgList().isEmpty()) {
@@ -146,6 +166,30 @@ public class MainWindowController {
         }
       }
     });
+  }
+
+  private void populateToySemaphoreTable() {
+    IToySemaphore<Integer, Tuple<Integer, List<Integer>, Integer>> toySemaphoreTable = this.controller.getRepo().getPrgList().get(0).getToySemaphoreTable();
+    ObservableList<Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>> toySemaphoreTableEntries = FXCollections.observableArrayList();
+    try {
+      toySemaphoreTableEntries.addAll(toySemaphoreTable.getSemaphoreTable().entrySet());
+    } catch (Exception e) {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error accessing toy semaphore table: " + e.getMessage());
+      alert.showAndWait();
+    }
+    this.toySemaphoreTableView.setItems(toySemaphoreTableEntries);
+
+    // Add a listener to refresh the heap table view whenever its items change
+    this.toySemaphoreTableView.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Map.Entry<Integer, Tuple<Integer, List<Integer>, Integer>>> change) -> {
+      while (change.next()) {
+        if (change.wasUpdated()) {
+          this.toySemaphoreTableView.refresh();
+        }
+      }
+    }); 
   }
 
   private void populateOutput() {
