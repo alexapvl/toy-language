@@ -1,10 +1,13 @@
 package view;
 
 import java.io.BufferedReader;
+import java.util.List;
 
 import model.expressions.enums.ArithmeticOp;
 import model.expressions.enums.RelationalOp;
 import model.PrgState;
+import model.adt.CountSemaphore;
+import model.adt.ICountSemaphore;
 import model.adt.dictionary.GenericDictionary;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.GenericHeap;
@@ -19,9 +22,11 @@ import model.expressions.RelationalExp;
 import model.expressions.ValueExp;
 import model.expressions.VariableExp;
 import model.statements.WriteHeapStmt;
+import model.statements.AcquireSemaphoreStmt;
 import model.statements.AssignmentStmt;
 import model.statements.CloseRFileStmt;
 import model.statements.CompoundStmt;
+import model.statements.CreateSemaphoreStmt;
 import model.statements.ForkStmt;
 import model.statements.HeapAllocationStmt;
 import model.statements.IStmt;
@@ -29,6 +34,7 @@ import model.statements.IfStmt;
 import model.statements.OpenRFileStmt;
 import model.statements.PrintStmt;
 import model.statements.ReadFileStmt;
+import model.statements.ReleaseSemaphoreStmt;
 import model.statements.VariableDeclarationStmt;
 import model.statements.WhileStmt;
 import model.types.BooleanType;
@@ -45,6 +51,7 @@ import view.command.Command;
 import view.command.ExitCommand;
 import view.command.RunExampleCommand;
 import controller.Controller;
+import javafx.util.Pair;
 
 public class View {
   private static IStmt createExample1() {
@@ -237,14 +244,59 @@ public class View {
             new PrintStmt(new VariableExp("v"))));
   }
 
+  private static IStmt createExample12() {
+    // Ref int v1; int cnt;
+    // new(v1,1);createSemaphore(cnt,rH(v1));
+    // fork(acquire(cnt);wh(v1,rh(v1)*10);print(rh(v1));release(cnt));
+    // fork(acquire(cnt);wh(v1,rh(v1)*10);wh(v1,rh(v1)*2);print(rh(v1));release(cnt));
+    // acquire(cnt);
+    // print(rh(v1)-1);
+    // release(cnt)
+    // The final Out should be {10,200,9} or {10,9,200}.
+    return new CompoundStmt(
+      new VariableDeclarationStmt("v1", new RefType(new IntegerType())),
+      new CompoundStmt(
+        new VariableDeclarationStmt("cnt", new IntegerType()), 
+        new CompoundStmt(
+          new HeapAllocationStmt("v1", new ValueExp(new IntegerValue(1))), 
+          new CompoundStmt(
+            new CreateSemaphoreStmt("cnt", new ReadHeapExp(new VariableExp("v1"))), 
+            new CompoundStmt(
+              new ForkStmt(
+                new CompoundStmt(
+                  new AcquireSemaphoreStmt("cnt"),
+                  new CompoundStmt(
+                    new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY , new ValueExp(new IntegerValue(10)))),
+                    new CompoundStmt(
+                      new PrintStmt(new ReadHeapExp(new VariableExp("v1"))),
+                      new ReleaseSemaphoreStmt("cnt"))))),
+              new CompoundStmt(
+                new ForkStmt(
+                  new CompoundStmt(
+                    new AcquireSemaphoreStmt("cnt"),
+                    new CompoundStmt(
+                      new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10)))),
+                      new CompoundStmt(
+                        new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(2)))),
+                        new CompoundStmt(
+                          new PrintStmt(new ReadHeapExp(new VariableExp("v1"))),
+                          new ReleaseSemaphoreStmt("cnt")))))),
+                new CompoundStmt(
+                  new AcquireSemaphoreStmt("cnt"),
+                  new CompoundStmt(
+                    new PrintStmt(new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.SUBTRACT, new ValueExp(new IntegerValue(1)))),
+                    new ReleaseSemaphoreStmt("cnt")))))))));
+  }
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
     IGenericList<IValue> output = new GenericList<>();
     IGenericDictionary<StringValue, BufferedReader> fileTable = new GenericDictionary<>();
     IGenericHeap<Integer, IValue> heap = new GenericHeap<>();
+    ICountSemaphore<Integer, Pair<Integer, List<Integer>>> countSemaphore = new CountSemaphore();
 
-    return new PrgState(symTable, exeStack, output, originalProgram, fileTable, heap);
+    return new PrgState(symTable, exeStack, output, originalProgram, fileTable, heap, countSemaphore);
   }
 
   private static Controller createController(IStmt originalProgram, String logFilePath, boolean displayFlag) {
@@ -266,6 +318,7 @@ public class View {
     Controller ctr9 = createController(createExample9(), "log9.log", false);
     Controller ctr10 = createController(createExample10(), "log10.log", false);
     Controller ctr11 = createController(createExample11(), "log11.log", false);
+    Controller ctr12 = createController(createExample12(), "log12.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -289,6 +342,7 @@ public class View {
         "int v; Ref int a; v = 10; new(a, 22); fork(wH(a, 30); v = 32; print(v); print(rH(a))); print(v); print(rH(a));",
         ctr10);
     Command cmm11 = new RunExampleCommand("11", "int v; v = false; Print(v) -> has TYPE ERROR", ctr11);
+    Command cmm12 = new RunExampleCommand("12", "Count Semaphore Example", ctr12);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -302,6 +356,7 @@ public class View {
     textMenu.addCommand(cmm9);
     textMenu.addCommand(cmm10);
     textMenu.addCommand(cmm11);
+    textMenu.addCommand(cmm12);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
@@ -331,6 +386,8 @@ public class View {
         return createController(createExample10(), "log10.log", false);
       case "11":
         return createController(createExample11(), "log11.log", false);
+      case "12":
+        return createController(createExample12(), "log12.log", false);
       default:
         return null;
     }

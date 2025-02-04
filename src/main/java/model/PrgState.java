@@ -1,8 +1,11 @@
 package model;
 
 import java.io.BufferedReader;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javafx.util.Pair;
+import model.adt.ICountSemaphore;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -20,18 +23,20 @@ public class PrgState {
   private IStmt originalProgram;
   private IGenericDictionary<StringValue, BufferedReader> fileTable;
   private IGenericHeap<Integer, IValue> heap;
+  private ICountSemaphore<Integer, Pair<Integer, List<Integer>>> countSemaphoreTable;
   private static AtomicInteger nextId = new AtomicInteger(1);
   private int id;
 
   public PrgState(IGenericDictionary<String, IValue> symTable, IGenericStack<IStmt> exeStack,
       IGenericList<IValue> out, IStmt originalProgram, IGenericDictionary<StringValue, BufferedReader> fileTable,
-      IGenericHeap<Integer, IValue> heap) {
+      IGenericHeap<Integer, IValue> heap, ICountSemaphore<Integer, Pair<Integer, List<Integer>>> countSemaphoreTable) {
     this.id = getNextId();
     this.symTable = symTable;
     this.exeStack = exeStack;
     this.out = out;
     this.originalProgram = originalProgram;
     this.fileTable = fileTable;
+    this.countSemaphoreTable = countSemaphoreTable;
     this.heap = heap;
 
     exeStack.push(originalProgram);
@@ -93,10 +98,18 @@ public class PrgState {
     this.heap = heap;
   }
 
+  public ICountSemaphore<Integer, Pair<Integer, List<Integer>>> getCountSemaphore() {
+    return this.countSemaphoreTable;
+  }
+
+  public void setCountSemaphoreTable(ICountSemaphore<Integer, Pair<Integer, List<Integer>>> countSemaphoreTable) {
+    this.countSemaphoreTable = countSemaphoreTable;
+  }
+
   @Override
   public String toString() {
     return "Program ID: " + this.id + "\nExeStack:\n" + this.exeStack + "\nSymTable:\n" + this.symTable
-        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap;
+        + "\nOut:\n" + this.out + "\nFileTable:\n" + this.fileTable + "\nHeap:\n" + this.heap + "\nCount Semaphore:\n" + this.countSemaphoreTable;
   }
 
   public boolean isNotCompleted() {

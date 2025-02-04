@@ -17,7 +17,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.util.Pair;
 import model.PrgState;
+import model.adt.ICountSemaphore;
 import model.adt.dictionary.IGenericDictionary;
 import model.adt.heap.IGenericHeap;
 import model.adt.list.IGenericList;
@@ -39,6 +41,15 @@ public class MainWindowController {
   private TableColumn<Map.Entry<Integer, IValue>, String> heapAddressColumn;
   @FXML
   private TableColumn<Map.Entry<Integer, IValue>, String> heapValueColumn;
+
+  @FXML
+  private TableView<Map.Entry<Integer, Pair<Integer, List<Integer>>>> semaphoreTableView;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Pair<Integer, List<Integer>>>, String> semaphoreIndexColumn;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Pair<Integer, List<Integer>>>, String> semaphoreValueColumn;
+  @FXML
+  private TableColumn<Map.Entry<Integer, Pair<Integer, List<Integer>>>, String> semaphoreListColumn;
 
   @FXML
   private ListView<String> outputListView;
@@ -68,6 +79,14 @@ public class MainWindowController {
     // For the value column, convert the IValue to String
     this.heapValueColumn
       .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().toString()));
+
+    // configure for semaphore table
+    this.semaphoreIndexColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKey().toString()));
+    this.semaphoreValueColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().getKey().toString()));
+    this.semaphoreListColumn
+      .setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getValue().getValue().toString()));
 
     // Configure how to display symbol table entries:
     // For variable names, use the String key directly
@@ -105,6 +124,7 @@ public class MainWindowController {
     populateFileTable();
     populatePrgStateIdentifiers();
     populateNumberOfProgramStates();
+    populateSemaphoreTable();
 
     // select the first program state from the list if none are selected
     if (this.selectedProgram == null && !controller.getRepo().getPrgList().isEmpty()) {
@@ -146,6 +166,32 @@ public class MainWindowController {
         }
       }
     });
+  }
+
+  private void populateSemaphoreTable() {
+    ICountSemaphore<Integer, Pair<Integer, List<Integer>>> semaphoreTable 
+      = this.controller.getRepo().getPrgList().get(0).getCountSemaphore();
+    ObservableList<Map.Entry<Integer, Pair<Integer, List<Integer>>>> semaphoreTableEntries 
+      = FXCollections.observableArrayList();
+    try {
+      semaphoreTableEntries.addAll(semaphoreTable.getCountSemaphore().entrySet());
+    } catch (Exception e) {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Error accessing semaphore table: " + e.getMessage());
+      alert.showAndWait();
+    }
+    this.semaphoreTableView.setItems(semaphoreTableEntries);
+
+    // Add a listener to refresh the heap table view whenever its items change
+    this.semaphoreTableView.getItems().addListener((javafx.collections.ListChangeListener.Change<? extends Map.Entry<Integer, Pair<Integer, List<Integer>>>> change) -> {
+      while (change.next()) {
+        if (change.wasUpdated()) {
+          this.heapTableView.refresh();
+        }
+      }
+    }); 
   }
 
   private void populateOutput() {
@@ -263,9 +309,10 @@ public class MainWindowController {
       controller.oneStepForAllPrg(prgList);
       populateAll();
       
-      // Force refresh the symbol table and heap table views to show updated values
+      // Force refresh the symbol table, heap table and semaphore table views to show updated values
       this.symTableView.refresh();
       this.heapTableView.refresh();
+      this.semaphoreTableView.refresh();
     } catch (Exception e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error");
