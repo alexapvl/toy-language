@@ -279,16 +279,16 @@ public class View {
                     new ForkStmt(
                       new CompoundStmt(
                         new ForkStmt(
+                          new CompoundStmt(
+                            new LockAcquireStmt("x"), 
+                            new CompoundStmt(
+                              new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.SUBTRACT, new ValueExp(new IntegerValue(1)))), 
+                              new LockReleaseStmt("x")))), 
                         new CompoundStmt(
                           new LockAcquireStmt("x"), 
                           new CompoundStmt(
-                            new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.SUBTRACT, new ValueExp(new IntegerValue(1)))), 
-                            new LockReleaseStmt("x")))), 
-                      new CompoundStmt(
-                        new LockAcquireStmt("x"), 
-                        new CompoundStmt(
-                          new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10)))), 
-                          new LockReleaseStmt("x"))))), 
+                            new WriteHeapStmt("v1", new ArithmeticExp(new ReadHeapExp(new VariableExp("v1")), ArithmeticOp.MULTIPLY, new ValueExp(new IntegerValue(10)))), 
+                            new LockReleaseStmt("x"))))), 
                     new CompoundStmt(
                       new NewLockStmt("q"), 
                       new CompoundStmt(
