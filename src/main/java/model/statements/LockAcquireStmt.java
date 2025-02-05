@@ -33,9 +33,9 @@ public class LockAcquireStmt implements IStmt {
 
     if (!lockTable.contains(foundIndex)) {
       throw new AppException("LockAcquireStmt: Found index is not in the LockTable");
-    } else if (lockTable.lookup(foundIndex) == -1) { // ready to lock
-      lockTable.put(foundIndex, (Integer) state.getId());
-    } else { // another program state holds the lock
+    }
+
+    if (!lockTable.tryAcquire(foundIndex, state.getId())) {
       state.getExeStack().push(this);
     }
 

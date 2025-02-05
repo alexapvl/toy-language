@@ -66,4 +66,14 @@ public class Lock<K,V> implements ILock<K,V> {
     return this.freeAddress.getAndIncrement();
   }
   
+  public synchronized boolean tryAcquire(K key, V threadId) throws KeyNotFoundAppException {
+    if (!this.contains(key)) {
+      throw new KeyNotFoundAppException("Key not found in the LockTable");
+    }
+    if (this.lockTable.get(key).equals(-1)) {
+      this.lockTable.put(key, threadId);
+      return true;
+    }
+    return false;
+  }
 }

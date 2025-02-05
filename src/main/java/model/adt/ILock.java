@@ -23,4 +23,6 @@ public interface ILock<K, V> {
   void setLockTable(Map<K, V> lockTable);
 
   Integer allocate();
+
+  boolean tryAcquire(K key, V value) throws KeyNotFoundAppException;
 }
