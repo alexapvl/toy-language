@@ -74,6 +74,7 @@ public class ProgramListController {
       alert.setTitle("Error");
       alert.setHeaderText(null);
       alert.setContentText("Error creating program state: " + e.getMessage());
+      e.printStackTrace();
       alert.showAndWait();
     }
   }

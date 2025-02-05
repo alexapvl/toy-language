@@ -24,6 +24,7 @@ import model.statements.WriteHeapStmt;
 import model.statements.AssignmentStmt;
 import model.statements.CloseRFileStmt;
 import model.statements.CompoundStmt;
+import model.statements.ForStmt;
 import model.statements.ForkStmt;
 import model.statements.HeapAllocationStmt;
 import model.statements.IStmt;
@@ -325,6 +326,27 @@ public class View {
                                           new LockReleaseStmt("q"))))))))))))))))))));
   }
 
+  private static IStmt createExample13() {
+    // Ref int a; new(a,20);
+    // (for(v=0;v<3;v=v+1) fork(print(v);v=v*rh(a)));
+    // print(rh(a))
+    return new CompoundStmt(
+      new VariableDeclarationStmt("a", new RefType(new IntegerType())), 
+      new CompoundStmt(
+        new HeapAllocationStmt("a", new ValueExp(new IntegerValue(20))), 
+        new CompoundStmt(
+          new ForStmt(
+            "v", 
+            new ValueExp(new IntegerValue(0)), 
+            new ValueExp(new IntegerValue(3)) , 
+            new ArithmeticExp(new VariableExp("v"), ArithmeticOp.ADD, new ValueExp(new IntegerValue(1))), 
+            new ForkStmt(
+              new CompoundStmt(
+                new PrintStmt(new VariableExp("v")), 
+                new AssignmentStmt("v", new ArithmeticExp(new VariableExp("v"), ArithmeticOp.MULTIPLY, new ReadHeapExp(new VariableExp("a"))))))), 
+          new PrintStmt(new ReadHeapExp(new VariableExp("a"))))));
+  }
+
   private static PrgState createPrgState(IStmt originalProgram) {
     IGenericDictionary<String, IValue> symTable = new GenericDictionary<>();
     IGenericStack<IStmt> exeStack = new GenericStack<>();
@@ -356,6 +378,7 @@ public class View {
     Controller ctr10 = createController(createExample10(), "log10.log", false);
     Controller ctr11 = createController(createExample11(), "log11.log", false);
     Controller ctr12 = createController(createExample12(), "log12.log", false);
+    Controller ctr13 = createController(createExample13(), "log13.log", false);
 
     Command cmm1 = new RunExampleCommand("1", "int v; v = 2; Print(v)", ctr1);
     Command cmm2 = new RunExampleCommand("2", "int a; int b; a = 2 + 3 * 5; b = a + 1; Print(b)", ctr2);
@@ -380,6 +403,7 @@ public class View {
         ctr10);
     Command cmm11 = new RunExampleCommand("11", "int v; v = false; Print(v) -> has TYPE ERROR", ctr11);
     Command cmm12 = new RunExampleCommand("12", "Lock Example", ctr12);
+    Command cmm13 = new RunExampleCommand("13", "For Example", ctr13);
 
     TextMenu textMenu = new TextMenu();
     textMenu.addCommand(cmm1);
@@ -394,6 +418,7 @@ public class View {
     textMenu.addCommand(cmm10);
     textMenu.addCommand(cmm11);
     textMenu.addCommand(cmm12);
+    textMenu.addCommand(cmm13);
     textMenu.addCommand(new ExitCommand("0", "Exit"));
 
     return textMenu;
@@ -425,6 +450,8 @@ public class View {
         return createController(createExample11(), "log11.log", false);
       case "12":
         return createController(createExample12(), "log12.log", false);
+      case "13":
+        return createController(createExample13(), "log13.log", false);
       default:
         return null;
     }
